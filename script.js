@@ -1,146 +1,138 @@
-// =======================================================================
-// 1. LOGIKA SUBMIT FORMULIR (Dijalankan setelah semua elemen HTML dimuat)
-// =======================================================================
-document.addEventListener('DOMContentLoaded', function() {
-    // Menggunakan ID formulir yang ada di HTML: registrationCustomForm
-    const form = document.getElementById('registrationCustomForm');
-    
-    if (!form) {
-        console.error("Elemen formulir dengan ID 'registrationCustomForm' tidak ditemukan. JavaScript tidak akan berjalan.");
-        return; 
-    }
-
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // Tentukan URL Proxy Cloudflare Anda
-        const appScriptUrl = 'https://treasuress.pages.dev/api'; 
-
-        const formData = new FormData(form);
-        
-        // Menggunakan ID input file yang ada di HTML: ssKepemilikan
-        const fileInput = document.getElementById('ssKepemilikan'); 
-        
-        // Menggunakan ID tombol submit yang ada di HTML: submitButton
-        const submitButton = document.getElementById('submitButton'); 
-        
-        // Menggunakan ID wadah pesan yang ada di HTML: responseMessage
-        const messageContainer = document.getElementById('responseMessage');
-
-        // Tampilkan pesan loading
-        if (messageContainer) {
-            messageContainer.innerHTML = 'Memproses pendaftaran... Mohon tunggu.';
-            messageContainer.className = 'response-message show loading';
-        }
-        if (submitButton) {
-            submitButton.disabled = true;
-        }
-
-        // Validasi file
-        if (!fileInput || fileInput.files.length === 0) {
-            if (messageContainer) {
-                messageContainer.innerHTML = 'Gagal: File screenshot wajib diunggah.';
-                messageContainer.className = 'response-message show error';
-            }
-            if (submitButton) {
-                submitButton.disabled = false;
-            }
-            return;
-        }
-
-        const file = fileInput.files[0];
-        const reader = new FileReader();
-
-        reader.onloadend = function() {
-            const base64Data = reader.result; 
-
-            // Siapkan objek data untuk dikirim sebagai JSON
-            const object = {};
-            formData.forEach((value, key) => {
-                // Abaikan input file asli (name="ssBukti")
-                if (key !== 'ssBukti') { 
-                    object[key] = value;
-                }
-            });
-            
-            // Tambahkan Base64 dan Nama File ke objek data (sesuai yang dicari Apps Script)
-            object['Screenshot Bukti Kepemilikan Account BA_base64'] = base64Data;
-            object['Screenshot Bukti Kepemilikan Account BA_filename'] = file.name; 
-
-            // Kirim data ke Cloudflare Proxy
-            fetch(appScriptUrl, {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(object),
-            })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    return response.text().then(text => {
-                        throw new Error(text);
-                    });
-                }
-            })
-            .then(data => {
-                if (messageContainer) {
-                    if (data.status === 'success') {
-                        messageContainer.innerHTML = `Sukses: ${data.message}`;
-                        messageContainer.className = 'response-message show success';
-                        form.reset(); 
-                    } else {
-                        messageContainer.innerHTML = `Gagal: ${data.message || 'Terjadi error di server Apps Script.'}`;
-                        messageContainer.className = 'response-message show error';
-                    }
-                }
-            })
-            .catch(error => {
-                if (messageContainer) {
-                    let errorMessage = error.message.substring(0, 100); 
-                    
-                    if (errorMessage.startsWith('<!DOCTYPE')) {
-                        messageContainer.innerHTML = `Gagal: Unexpected token '<', "<!DOCTYPE "... is not valid JSON. (Periksa Otorisasi Apps Script)`;
-                    } else {
-                         messageContainer.innerHTML = `Gagal: Terjadi error koneksi: ${errorMessage}`;
-                    }
-                    messageContainer.className = 'response-message show error';
-                }
-            })
-            .finally(() => {
-                if (submitButton) {
-                    submitButton.disabled = false;
-                }
-            });
-        };
-
-        reader.readAsDataURL(file);
-    });
-});
-
-
-// =======================================================================
-// 2. FUNGSI TOGGLE FORMULIR (Membuat formulir muncul saat diklik)
-// =======================================================================
-// Fungsi ini harus global agar dapat dipanggil oleh onclick="toggleRegistrationForm()" di HTML
-function toggleRegistrationForm() {
-    // Konten formulir yang disembunyikan/ditampilkan
-    const content = document.querySelector('.registration-form-content'); 
-    // Section induk untuk mengaktifkan perubahan ikon panah (▼/▲) di CSS
-    const section = document.querySelector('.registration-section'); 
-
-    if (content && section) {
-        // Menggunakan toggle untuk menambahkan atau menghapus kelas 'active'
-        content.classList.toggle('active'); 
-        section.classList.toggle('active'); 
-        
-        // Opsional: Untuk memastikan elemen terlihat (jika CSS tidak sepenuhnya mendefinisikannya)
-        if (content.classList.contains('active')) {
-            content.style.display = 'block'; 
-        } else {
-            content.style.display = 'block'; // Pertahankan display: block, biarkan max-height:0 yang menyembunyikan
-        }
+// Fungsi untuk memainkan suara saat hover
+function playSound() {
+    const sound = document.getElementById("hoverSound");
+    if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(e => console.warn("Audio play failed:", e));
     }
 }
+
+// Fungsi untuk mengaktifkan/nonaktifkan dropdown formulir
+function toggleRegistrationForm() {
+    const section = document.querySelector('.registration-section');
+    const content = document.querySelector('.registration-form-content');
+
+    section.classList.toggle('active');
+    content.classList.toggle('active');
+
+    // Sembunyikan pesan respons dan tombol WhatsApp saat formulir ditutup/dibuka
+    const responseMessage = document.getElementById('responseMessage');
+    const whatsappButtonContainer = document.getElementById('whatsappButtonContainer');
+
+    if (responseMessage) {
+        responseMessage.classList.remove('show', 'success', 'error');
+        responseMessage.textContent = '';
+    }
+    if (whatsappButtonContainer) {
+        whatsappButtonContainer.classList.remove('show');
+    }
+
+    playSound();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const registrationForm = document.getElementById('registrationCustomForm');
+    const submitButton = document.getElementById('submitButton');
+    const buttonContent = submitButton ? submitButton.querySelector('.button-content') : null;
+    const responseMessage = document.getElementById('responseMessage');
+    const whatsappButtonContainer = document.getElementById('whatsappButtonContainer'); // Get the new container
+
+    // Cek apakah semua elemen penting ditemukan
+    if (!registrationForm || !submitButton || !buttonContent || !responseMessage || !whatsappButtonContainer) {
+        console.error("Error: One or more required elements (form, button, button content, response message, or WhatsApp button container) not found. Cannot proceed with form logic.");
+        return; // Hentikan eksekusi jika elemen tidak ditemukan
+    }
+
+    registrationForm.addEventListener('submit', async function(event) {
+        event.preventDefault(); // Mencegah pengiriman formulir default
+
+        // 1. **Mulai Efek Loading pada Tombol & Sembunyikan Pesan Lama**
+        submitButton.disabled = true; // Nonaktifkan tombol
+        submitButton.classList.add('loading'); // Tambahkan kelas loading untuk CSS
+        if (buttonContent) buttonContent.textContent = 'Mengirim...'; // Ubah teks tombol
+        responseMessage.classList.remove('show', 'success', 'error'); // Sembunyikan dan reset kelas
+        responseMessage.textContent = ''; // Kosongkan teks pesan
+        whatsappButtonContainer.classList.remove('show'); // Hide WhatsApp button
+
+        const form = event.target;
+        const fileInput = form.querySelector('input[name="ssBukti"]');
+
+        // --- INI URL WEB APP APPS SCRIPT ANDA ---
+        const appScriptUrl = 'https://accouner.site/api/submit-form'; // <--- PASTIKAN INI URL YANG BENAR DAN TIDAK BERUBAH
+        // ----------------------------------------
+
+        try {
+            const formData = new FormData(form);
+
+            // Proses file menjadi Base64
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+
+                const base64Data = await new Promise((resolve, reject) => {
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                    reader.readAsDataURL(file); // Baca file sebagai Data URL (Base64 string)
+                });
+
+                formData.append('Screenshot Bukti Kepemilikan Account BA_base64', base64Data);
+                formData.append('Screenshot Bukti Kepemilikan Account BA_filename', file.name);
+                formData.delete('ssBukti'); // Hapus input file asli agar tidak dikirim dua kali
+            } else {
+                // Validasi: File screenshot wajib diunggah
+                responseMessage.textContent = 'Gagal: File screenshot wajib diunggah.';
+                responseMessage.classList.add('show', 'error');
+                // Kembali ke kondisi awal tombol (tanpa loading)
+                submitButton.disabled = false;
+                submitButton.classList.remove('loading');
+                if (buttonContent) buttonContent.textContent = 'Daftar Sekarang';
+                return; // Hentikan proses jika tidak ada file
+            }
+
+            // Kirim data ke Apps Script
+            const response = await fetch(appScriptUrl, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+            }
+
+            const result = await response.json();
+
+            // 2. Tampilkan pesan berdasarkan respons dari Apps Script
+            if (result.status === 'success') {
+                responseMessage.textContent = 'Selamat, formulir Anda berhasil dikirim!';
+                responseMessage.classList.add('show', 'success');
+                form.reset(); // Mengosongkan semua input di formulir
+                whatsappButtonContainer.classList.add('show'); // Show WhatsApp button on success
+
+                // Pastikan tombol kembali normal
+                submitButton.disabled = false;
+                submitButton.classList.remove('loading');
+                if (buttonContent) buttonContent.textContent = 'Daftar Sekarang';
+
+            } else {
+                const errorMessage = result.message || 'Terjadi kesalahan tidak diketahui dari server.';
+                responseMessage.textContent = 'Gagal: ' + errorMessage;
+                responseMessage.classList.add('show', 'error');
+                // Pastikan tombol kembali normal
+                submitButton.disabled = false;
+                submitButton.classList.remove('loading');
+                if (buttonContent) buttonContent.textContent = 'Daftar Sekarang';
+            }
+
+        } catch (error) {
+            // 3. Tangani kesalahan jaringan atau JavaScript
+            responseMessage.textContent = 'Terjadi kesalahan saat mengirim. Coba lagi: ' + error.message;
+            responseMessage.classList.add('show', 'error');
+            console.error('Error during form submission:', error);
+            // Pastikan tombol kembali normal
+            submitButton.disabled = false;
+            submitButton.classList.remove('loading');
+            if (buttonContent) buttonContent.textContent = 'Daftar Sekarang';
+        }
+    });
+});
