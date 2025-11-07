@@ -11,14 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return; 
     }
 
+    // ➡️ URL CLOUDFLARE PAGES FUNCTION (PROXY) YANG SUDAH DISESUAIKAN
+    const appScriptUrl = 'https://treasuress.pages.dev/api'; 
+    // -----------------------------------------------------------------------
+
     registrationForm.addEventListener('submit', async function(event) {
         event.preventDefault(); // Mencegah pengiriman formulir default (reload halaman)
-
-        // ⚠️ GANTI INI NANTI ⚠️
-        // Setelah Anda deploy ke Cloudflare Pages, ganti placeholder ini.
-        // Formatnya HARUS: https://[nama-proyek-baru].pages.dev/api
-        const appScriptUrl = 'URL_CLOUDFLARE_PROXY_BARU_ANDA/api'; 
-        // -----------------------------------------------------------------------
 
         // 1. **Mulai Efek Loading pada Tombol & Sembunyikan Pesan Lama**
         submitButton.disabled = true; 
@@ -27,15 +25,15 @@ document.addEventListener('DOMContentLoaded', () => {
         responseMessage.classList.remove('show', 'success', 'error'); 
         responseMessage.textContent = ''; 
         whatsappButtonContainer.classList.remove('show'); 
+        
+        // Sembunyikan spinner loading saat proses awal 
+        const loadingSpinner = submitButton.querySelector('.loading-spinner');
+        if (loadingSpinner) loadingSpinner.style.display = 'block';
 
         const form = event.target;
         const fileInput = form.querySelector('input[name="ssBukti"]');
 
         try {
-            if (appScriptUrl.includes('URL_CLOUDFLARE_PROXY_BARU_ANDA')) {
-                throw new Error('URL Proxy belum diganti. Harap ganti placeholder URL di script.js.');
-            }
-            
             const formData = new FormData(form);
             let isFileAttached = false;
 
@@ -52,10 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 // Menambahkan Base64 dan nama file ke FormData
+                // Nama field disesuaikan dengan Apps Script: field_name + _base64
                 formData.append('Screenshot Bukti Kepemilikan Account BA_base64', base64Data);
                 formData.append('Screenshot Bukti Kepemilikan Account BA_filename', file.name);
                 
-                // Hapus input file asli
+                // Hapus input file asli (ini penting agar tidak ada konflik di Apps Script)
                 formData.delete('ssBukti'); 
             } else {
                 isFileAttached = false;
@@ -63,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Validasi: File screenshot wajib diunggah
             if (!isFileAttached) {
-                throw new Error('File screenshot wajib diunggah.');
+                throw new Error('File screenshot wajib diunggah. Silakan pilih file.');
             }
             
             // Kirim data ke Apps Script via Proxy
@@ -87,12 +86,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 2. Tampilkan pesan berdasarkan respons dari Apps Script
             if (result.status === 'success') {
-                responseMessage.textContent = 'Selamat, formulir Anda berhasil dikirim!';
+                responseMessage.textContent = 'Selamat, formulir Anda berhasil dikirim! Silakan gabung grup WhatsApp.';
                 responseMessage.classList.add('show', 'success');
                 form.reset(); 
                 whatsappButtonContainer.classList.add('show'); 
             } else {
-                const errorMessage = result.message || 'Terjadi kesalahan tidak diketahui dari server.';
+                const errorMessage = result.message || 'Terjadi kesalahan tidak diketahui dari server Apps Script.';
                 throw new Error(errorMessage);
             }
 
@@ -106,39 +105,68 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.disabled = false;
             submitButton.classList.remove('loading');
             if (buttonContent) buttonContent.textContent = 'Daftar Sekarang';
+             // Sembunyikan spinner loading saat selesai
+            const loadingSpinner = submitButton.querySelector('.loading-spinner');
+            if (loadingSpinner) loadingSpinner.style.display = 'none';
         }
     });
+
+
+    // Fungsi untuk memainkan suara saat hover
+    function playSound() {
+        const sound = document.getElementById("hoverSound");
+        if (sound) {
+            // Menambahkan check untuk memastikan audio dimuat
+            if (sound.readyState >= 2) { 
+                sound.currentTime = 0;
+                sound.play().catch(e => console.warn("Audio play failed (maybe user hasn't interacted):", e));
+            } else {
+                // Jika belum dimuat, coba muat ulang atau abaikan
+                console.warn("Audio file not yet ready.");
+            }
+        }
+    }
+
+    // Pasang listener untuk playSound pada semua elemen <li>
+    document.querySelectorAll('li[onmouseover="playSound()"]').forEach(li => {
+        li.removeEventListener('mouseover', playSound); // Hapus listener dari HTML
+        li.addEventListener('mouseover', playSound); // Pasang listener di JS
+    });
+    
+    // Fungsi untuk mengaktifkan/nonaktifkan dropdown formulir
+    function toggleRegistrationForm() {
+        const section = document.querySelector('.registration-section');
+        const content = document.querySelector('.registration-form-content');
+
+        const isOpen = content.classList.contains('active');
+        
+        // Toggle class 'active'
+        section.classList.toggle('active');
+        content.classList.toggle('active');
+
+        // Sembunyikan pesan respons dan tombol WhatsApp saat formulir ditutup/dibuka
+        const responseMessage = document.getElementById('responseMessage');
+        const whatsappButtonContainer = document.getElementById('whatsappButtonContainer');
+
+        // Sembunyikan pesan dan tombol jika formulir ditutup
+        if (isOpen) {
+             if (responseMessage) {
+                responseMessage.classList.remove('show', 'success', 'error');
+                responseMessage.textContent = '';
+            }
+            if (whatsappButtonContainer) {
+                whatsappButtonContainer.classList.remove('show');
+            }
+        }
+
+        playSound();
+    }
+    
+    // Pasang listener untuk judul formulir
+    const regFormTitle = document.querySelector('.registration-section h2');
+    if (regFormTitle) {
+        regFormTitle.addEventListener('click', toggleRegistrationForm);
+        regFormTitle.addEventListener('mouseover', playSound);
+    }
+    
 });
-
-
-// Fungsi untuk memainkan suara saat hover
-function playSound() {
-    const sound = document.getElementById("hoverSound");
-    if (sound) {
-        sound.currentTime = 0;
-        sound.play().catch(e => console.warn("Audio play failed:", e));
-    }
-}
-
-// Fungsi untuk mengaktifkan/nonaktifkan dropdown formulir
-function toggleRegistrationForm() {
-    const section = document.querySelector('.registration-section');
-    const content = document.querySelector('.registration-form-content');
-
-    section.classList.toggle('active');
-    content.classList.toggle('active');
-
-    // Sembunyikan pesan respons dan tombol WhatsApp saat formulir ditutup/dibuka
-    const responseMessage = document.getElementById('responseMessage');
-    const whatsappButtonContainer = document.getElementById('whatsappButtonContainer');
-
-    if (responseMessage) {
-        responseMessage.classList.remove('show', 'success', 'error');
-        responseMessage.textContent = '';
-    }
-    if (whatsappButtonContainer) {
-        whatsappButtonContainer.classList.remove('show');
-    }
-
-    playSound();
-}
