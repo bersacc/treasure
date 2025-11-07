@@ -136,6 +136,7 @@ h1 span {
     background: #fff;
     border-radius: 15px;
     padding: 20px;
+    /* Margin akan diatur oleh container grid di desktop */
     margin: 20px auto; /* Default untuk mobile/non-grid */
     width: auto;
     max-width: 600px; /* Lebar maksimum di desktop untuk section konten */
@@ -167,22 +168,22 @@ h1 span {
     100% { background-position: 100% 100%; }
 }
 .section h2 {
-    font-family: 'Chewy', cursive; 
+    font-family: 'Chewy', cursive; /* Pastikan judul section menggunakan Chewy */
     color: #fff;
-    background-color: #00bcd4; 
+    background-color: #00bcd4; /* Warna solid untuk visibilitas maksimal */
     padding: 10px 15px;
     border-radius: 10px;
     margin-top: 0;
     margin-bottom: 15px;
-    display: block; 
-    width: 100%; 
-    box-sizing: border-box; 
-    white-space: nowrap; 
-    text-align: center; 
+    display: block; /* Mengambil lebar penuh yang tersedia */
+    width: 100%; /* Menyesuaikan lebar pembungkus dengan lebar konten .section */
+    box-sizing: border-box; /* Memastikan padding termasuk dalam 100% width */
+    white-space: nowrap; /* Memaksa teks pada satu baris */
+    text-align: center; /* Menengahkan teks dan ikon secara horizontal */
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-    cursor: default; 
-    position: relative; 
+    cursor: default; /* Default cursor for static headers */
+    position: relative; /* For dropdown arrow positioning */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -192,10 +193,20 @@ ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    flex-grow: 1; 
+    flex-grow: 1; /* Biarkan ul mengisi ruang yang tersisa */
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; 
+    justify-content: flex-start; /* Atau space-around jika ingin item tersebar */
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1; /* Biarkan ul mengisi ruang yang tersisa */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Atau space-around jika ingin item tersebar */
 }
 
 li {
@@ -205,7 +216,7 @@ li {
     padding: 10px;
     transition: transform 0.3s;
     cursor: pointer;
-    text-align: left; 
+    text-align: left; /* Ensure text is left-aligned by default */
 }
 
 li:hover {
@@ -213,7 +224,8 @@ li:hover {
     background: #ffe0b2;
 }
 
-/* Perataan Awal Huruf & Colon Per Bagian */
+/* ----- PERUBAHAN UTAMA UNTUK PERATAAN AWAL HURUF & COLON PER BAGIAN ----- */
+/* Gaya umum untuk item daftar yang memiliki label (bagian 1, 2, 3) */
 .section:nth-of-type(1) ul li,
 .section:nth-of-type(2) ul li,
 .section:nth-of-type(3) ul li {
@@ -222,6 +234,7 @@ li:hover {
     gap: 0px;
     align-items: baseline;
 }
+/* Penyesuaian khusus untuk colon-char dan label */
 .section ul li .label {
     text-align: left;
     font-weight: bold;
@@ -238,11 +251,12 @@ li:hover {
     padding-left: 5px;
 }
 
-/* Override untuk item daftar tanpa label/nilai (misalnya: section 4, S&K, dan Kebijakan Privasi) */
+/* Override khusus untuk item daftar yang TIDAK memiliki label/nilai (bagian 4, S&K, dan Kebijakan Privasi) */
 .section ul li:not(:has(span.label)) {
     display: block;
     text-align: left;
 }
+/* ----- AKHIR PERUBAHAN UTAMA ----- */
 
 footer {
     text-align: center;
@@ -256,12 +270,12 @@ footer {
     padding: 0 20px;
     box-sizing: border-box;
     position: relative;
-    display: flex; 
+    display: flex; /* Untuk flexbox agar item footer tertata vertikal */
     flex-direction: column;
-    align-items: center; 
+    align-items: center; /* Untuk menengahkan item secara horizontal */
 }
 
-/* Footer Lines Container (Menggunakan keyframes yang sama dengan header) */
+/* Footer Lines Container */
 .footer-lines-container {
     display: flex;
     justify-content: center;
@@ -269,10 +283,10 @@ footer {
     width: 100%;
     height: 3px;
     overflow: hidden;
-    margin-top: 0; 
-    margin-bottom: 20px; 
+    margin-top: 0; /* Reset margin top */
+    margin-bottom: 20px; /* Margin bawah untuk memisahkan dari teks */
     position: relative;
-    order: 0; 
+    order: 0; /* Pastikan garis di atas teks */
 }
 
 .footer-line {
@@ -304,13 +318,13 @@ footer {
     font-size: 0.9rem;
     color: #999;
     margin-top: 10px;
-    margin-bottom: 0; 
-    order: 2; 
+    margin-bottom: 0; /* Pastikan tidak ada margin bawah berlebih */
+    order: 2; /* Atur urutan agar di bawah teks terima kasih */
 }
 
 .footer-text-thanks {
-    margin-bottom: 10px; 
-    order: 1; 
+    margin-bottom: 10px; /* Margin bawah untuk memisahkan dari copyright */
+    order: 1; /* Atur urutan agar di bawah garis */
 }
 
 @keyframes bounce {
@@ -327,15 +341,17 @@ footer {
 
 /* === CSS Khusus untuk Formulir Pendaftaran === */
 .section.registration-section {
-    max-width: 750px; 
-    background: linear-gradient(135deg, #f8f8f8, #e0e0e0); 
+    max-width: 750px; /* Lebar maksimum FORMULIR di desktop, agar dua kolom terlihat bagus */
+    background: linear-gradient(135deg, #f8f8f8, #e0e0e0); /* Subtle gradient background */
 }
 
-/* Judul Formulir (untuk toggle) */
+/* KONSISTENSI JUDUL FORMULIR DENGAN JUDUL SECTION LAINNYA */
 .section.registration-section h2 {
-    cursor: pointer; 
-    background: linear-gradient(90deg, #00bcd4, #0097a7); 
-    border-bottom: 3px solid #ff6f61; 
+    cursor: pointer; /* Tetap pointer karena bisa diklik */
+    background: linear-gradient(90deg, #00bcd4, #0097a7); /* Pertahankan gradien jika Anda suka */
+    border-bottom: 3px solid #ff6f61; /* Pertahankan border bottom jika Anda suka */
+    /* Pastikan properti lain (font-family, color, padding, border-radius, margin, box-shadow, text-shadow)
+       sudah diwarisi dengan benar dari .section h2 atau disetel di sini jika ada perbedaan. */
 }
 
 .section.registration-section h2::after {
@@ -353,16 +369,18 @@ footer {
 
 .registration-form-content {
     max-height: 0;
-    overflow: hidden; 
+    overflow: hidden; /* Pertahankan ini agar transisi bekerja */
     transition: max-height 0.5s ease-out, padding-top 0.5s ease-out, padding-bottom 0.5s ease-out;
     padding-top: 0;
     padding-bottom: 0;
 }
 
 .registration-form-content.active {
-    max-height: 700px; /* Cukup besar untuk menampung konten */
+    /* PERUBAHAN UTAMA DI SINI: MENINGKATKAN MAX-HEIGHT SECUKUPNYA */
+    /* Ini harus cukup besar untuk menampung semua konten (form + pesan + tombol WA) */
+    max-height: 700px; /* Nilai yang lebih besar untuk akomodasi konten fleksibel */
     padding-top: 20px;
-    padding-bottom: 20px; 
+    padding-bottom: 20px; /* Pastikan ada padding bawah */
 }
 
 /* Styling untuk form itu sendiri */
@@ -376,7 +394,7 @@ footer {
     margin-bottom: 0;
 }
 
-/* Styling untuk Label Input */
+/* PENINGKATAN GAYA UNTUK LABEL INPUT (JUDUL) */
 .form-group label {
     display: block;
     margin-bottom: 8px;
@@ -388,16 +406,17 @@ footer {
     display: flex;
     align-items: center;
     line-height: 1.2;
-    text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.2), 
-                 -0.5px -0.5px 1px rgba(255, 255, 255, 0.5); 
+    /* Tambahkan text-shadow untuk efek "outer glow" */
+    text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.2), /* Shadow tipis untuk kedalaman */
+                 -0.5px -0.5px 1px rgba(255, 255, 255, 0.5); /* Highlight tipis untuk kilau */
 }
 
-.form-group label i { 
+.form-group label i { /* Gaya untuk ikon di dalam label */
     color: #ff6f61;
     margin-right: 8px;
     font-size: 1.1em;
     vertical-align: middle;
-    text-shadow: none; 
+    text-shadow: none; /* Hapus shadow pada ikon agar tidak terlalu berat */
 }
 
 .form-group input[type="text"],
@@ -454,8 +473,8 @@ footer {
     max-width: 350px;
     align-self: center;
     letter-spacing: 0.5px;
-    position: relative; 
-    overflow: hidden; 
+    position: relative; /* Penting untuk penempatan pesan di atas tombol */
+    overflow: hidden; /* Pastikan konten di dalam tombol tidak keluar */
 }
 
 .registration-form-content button[type="submit"]:hover:not(:disabled) {
@@ -473,11 +492,11 @@ footer {
 }
 /* Style untuk pesan di dalam tombol */
 .registration-form-content button[type="submit"] .button-content {
-    display: inline-block; 
-    transition: opacity 0.3s ease; 
+    display: inline-block; /* Agar teks dan ikon bisa diatur */
+    transition: opacity 0.3s ease; /* Transisi untuk menghilang */
 }
 .registration-form-content button[type="submit"] .loading-spinner {
-    display: none; 
+    display: none; /* Sembunyikan spinner secara default */
     border: 4px solid rgba(255, 255, 255, 0.3);
     border-top: 4px solid white;
     border-radius: 50%;
@@ -490,10 +509,10 @@ footer {
     transform: translate(-50%, -50%);
 }
 .registration-form-content button[type="submit"].loading .button-content {
-    opacity: 0; 
+    opacity: 0; /* Sembunyikan teks asli saat loading */
 }
 .registration-form-content button[type="submit"].loading .loading-spinner {
-    display: block; 
+    display: block; /* Tampilkan spinner saat loading */
 }
 @keyframes spin {
     0% { transform: translate(-50%, -50%) rotate(0deg); }
@@ -503,43 +522,43 @@ footer {
 /* Styling untuk pesan respons yang muncul di bawah tombol */
 .response-message {
     text-align: center;
-    margin-top: 20px; 
+    margin-top: 20px; /* PERUBAHAN DI SINI: MENYESUAIKAN MARGIN ATAS */
     font-weight: bold;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 1.05rem;
     padding: 10px;
     border-radius: 5px;
-    display: block; 
-    opacity: 0; 
-    visibility: hidden; 
-    transition: opacity 0.5s ease-in-out, visibility 0s linear 0.5s; 
-    box-sizing: border-box; 
-    width: 100%; 
+    display: block; /* Pastikan selalu blok */
+    opacity: 0; /* Mulai dengan tidak terlihat */
+    visibility: hidden; /* Sembunyikan sepenuhnya dari layout */
+    transition: opacity 0.5s ease-in-out, visibility 0s linear 0.5s; /* Transisi */
+    box-sizing: border-box; /* Pastikan padding termasuk dalam lebar */
+    width: 100%; /* Lebar penuh */
 }
 
 .response-message.show {
-    opacity: 1; 
-    visibility: visible; 
-    transition: opacity 0.5s ease-in-out, visibility 0s linear 0s; 
+    opacity: 1; /* Tampilkan */
+    visibility: visible; /* Buat terlihat */
+    transition: opacity 0.5s ease-in-out, visibility 0s linear 0s; /* Transisi */
 }
 
 .response-message.success {
-    background-color: #d4edda; 
-    color: #155724; 
+    background-color: #d4edda; /* Warna latar belakang hijau terang yang lebih solid */
+    color: #155724; /* Warna teks hijau gelap yang lebih kontras */
     border: 1px solid #155724;
 }
 
 .response-message.error {
-    background-color: #f8d7da; 
-    color: #721c24; 
+    background-color: #f8d7da; /* Warna latar belakang merah terang yang lebih solid */
+    color: #721c24; /* Warna teks merah gelap yang lebih kontras */
     border: 1px solid #721c24;
 }
 
 /* WhatsApp Button Styles */
 .whatsapp-button-container {
     text-align: center;
-    margin-top: 15px; 
-    margin-bottom: 0; 
+    margin-top: 15px; /* PERUBAHAN UTAMA DI SINI: MENYESUAIKAN MARGIN ATAS */
+    margin-bottom: 0; /* Pastikan tidak ada margin bawah berlebih dari elemen ini */
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.5s ease-in-out, visibility 0s linear 0.5s;
@@ -556,7 +575,7 @@ footer {
     align-items: center;
     justify-content: center;
     padding: 12px 25px;
-    background: linear-gradient(90deg, #25D366, #128C7E); 
+    background: linear-gradient(90deg, #25D366, #128C7E); /* WhatsApp green gradient */
     color: white;
     border: none;
     border-radius: 8px;
@@ -589,31 +608,33 @@ footer {
         gap: 40px; /* Jarak antar kotak */
         max-width: 1200px; /* Sesuaikan lebar maksimum kontainer grid */
         margin: 40px auto; /* Pusatkan kontainer grid */
-        padding: 0 20px; 
+        padding: 0 20px; /* Padding samping agar tidak terlalu mepet ke tepi */
         box-sizing: border-box;
     }
 
     /* Penyesuaian untuk .section di dalam grid container */
     .sections-grid-container .section {
-        margin: 0; 
-        max-width: none; 
+        margin: 0; /* Hapus margin auto karena sudah diatur oleh grid gap */
+        max-width: none; /* Biarkan grid mengatur lebar */
     }
 
-    /* Konsistensi Tinggi Kotak */
+    /* ===== PERUBAHAN UTAMA DI SINI UNTUK KONSISTENSI TINGGI KOTAK ===== */
     .section {
         display: flex;
         flex-direction: column;
-        min-height: 400px; 
+        min-height: 400px; /* Meningkatkan min-height agar semua kotak terlihat lebih seragam. Sesuaikan jika perlu. */
         padding: 40px;
+        /* margin: 40px auto; <-- Dihapus/diatur ulang di .sections-grid-container atau .sections-grid-container .section */
     }
 
     /* Memastikan `ul` mengambil seluruh sisa ruang vertikal yang tersedia */
     .section ul {
-        flex-grow: 1; 
+        flex-grow: 1; /* Ini akan membuat UL mengisi ruang kosong */
         display: flex;
         flex-direction: column;
-        justify-content: flex-start; 
+        justify-content: flex-start; /* Items akan menempel ke atas */
     }
+    /* ===== AKHIR PERUBAHAN UTAMA DI SINI ===== */
 
     /* Untuk layout 2 kolom pada form */
     .registration-form-content form {
@@ -626,14 +647,14 @@ footer {
     .form-group.file-input-group,
     .registration-form-content button[type="submit"],
     .response-message,
-    .whatsapp-button-container { 
+    .whatsapp-button-container { /* Added for WhatsApp button */
         grid-column: 1 / -1;
     }
 
     .section.registration-section {
-        max-width: 800px; 
+        max-width: 800px; /* Tetap untuk form */
         padding: 50px;
-        margin: 40px auto; 
+        margin: 40px auto; /* Pertahankan margin auto untuk form agar tetap di tengah */
     }
 
     /* Penyesuaian untuk header utama di desktop */
@@ -647,21 +668,22 @@ footer {
     }
 }
 
-/* Media Query untuk Mobile */
+/* Media Query untuk Mobile (jika diperlukan penyesuaian khusus) */
 @media (max-width: 767px) {
     body {
         padding: 10px;
     }
 
+    /* Pastikan kontainer grid tidak aktif di mobile */
     .sections-grid-container {
-        display: block; 
-        margin: 0; 
+        display: block; /* Kembali ke block display */
+        margin: 0; /* Hapus margin kontainer grid */
         max-width: none;
         padding: 0;
     }
 
     .section {
-        margin: 15px 15px; 
+        margin: 15px 15px; /* Kembalikan margin individual section di mobile */
         padding: 20px;
         display: block;
         min-height: auto;
@@ -677,8 +699,16 @@ footer {
         padding: 12px 18px;
     }
 
-    .registration-form-content.active {
-        /* Menyesuaikan max-height untuk konten mobile */
-        max-height: 850px; 
+    /* Pada mobile, form-group akan tetap menumpuk karena flex-direction: column */
+    .form-group input,
+    .form-group select,
+    .form-group textarea,
+    .registration-form-content button[type="submit"] {
+        width: 100%;
+        max-width: none;
+    }
+.registration-form-content.active {
+        /* PERUBAHAN UTAMA DI SINI: MENYESUAIKAN MAX-HEIGHT UNTUK MOBILE JUGA */
+        max-height: 700px; /* Disesuaikan, pastikan cukup untuk semua elemen */
     }
 }
