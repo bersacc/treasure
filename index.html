@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Formulir Pendaftaran BA</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Pendaftaran BA</title>
   <style>
     body {
       font-family: "Poppins", sans-serif;
@@ -16,31 +16,21 @@
       min-height: 100vh;
       margin: 0;
     }
-    h1 {
-      color: #ffd700;
-      margin-bottom: 1rem;
-    }
+    h1 { color: #ffd700; }
     form {
       background: #1a1a1a;
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 0 10px rgba(255,255,255,0.1);
       width: 90%;
       max-width: 400px;
     }
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: 500;
-    }
-    input[type="text"],
-    input[type="tel"],
-    input[type="file"] {
+    label { display: block; margin-top: 10px; font-weight: 500; }
+    input {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
-      border-radius: 8px;
       border: none;
+      border-radius: 8px;
       background: #222;
       color: #fff;
     }
@@ -54,16 +44,8 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: 0.3s;
     }
-    button:hover {
-      background: #ffea61;
-    }
-    #msg {
-      margin-top: 15px;
-      text-align: center;
-      font-weight: 500;
-    }
+    #msg { margin-top: 15px; text-align: center; }
   </style>
 </head>
 <body>
@@ -73,16 +55,13 @@
     <input type="text" name="nama" required>
 
     <label>Platform Promosi</label>
-    <input type="text" name="platform" required placeholder="Contoh: Instagram, TikTok, Shopee">
+    <input type="text" name="platform" required>
 
     <label>Account BA</label>
-    <input type="text" name="account" required placeholder="@username atau link akun">
+    <input type="text" name="account" required>
 
     <label>Nomor WhatsApp</label>
-    <input type="tel" name="whatsapp" required placeholder="08xxxxxxxxxx">
-
-    <label>Screenshot Bukti Kepemilikan Akun BA</label>
-    <input type="file" name="bukti" accept="image/*" required>
+    <input type="tel" name="whatsapp" required>
 
     <button type="submit">Kirim</button>
     <div id="msg"></div>
@@ -94,58 +73,41 @@
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    msg.textContent = 'Mengirim data ke server...';
+    msg.textContent = 'Mengirim data...';
 
-    const formData = new FormData(form);
-    const file = formData.get('bukti');
-
-    if (!file) {
-      msg.textContent = "⚠️ Harap unggah file screenshot terlebih dahulu.";
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = async () => {
-      const base64File = reader.result.split(',')[1];
-
-      const payload = {
-        nama: formData.get('nama'),
-        platform: formData.get('platform'),
-        account: formData.get('account'),
-        whatsapp: formData.get('whatsapp'),
-        fileName: file.name,
-        fileData: base64File,
-        mimeType: file.type
-      };
-
-      msg.textContent = "📡 Mengirim ke server...";
-
-      try {
-        const res = await fetch('/api', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        const text = await res.text();
-        console.log("Response:", text);
-
-        const data = JSON.parse(text);
-        if (data.status === 'success') {
-          msg.textContent = '✅ Data berhasil disimpan!';
-          form.reset();
-        } else {
-          msg.textContent = '❌ ' + (data.message || 'Terjadi kesalahan.');
-        }
-
-      } catch (err) {
-        console.error(err);
-        msg.textContent = '⚠️ Gagal mengirim: ' + err.message;
-      }
+    const data = {
+      nama: form.nama.value,
+      platform: form.platform.value,
+      account: form.account.value,
+      whatsapp: form.whatsapp.value
     };
 
-    reader.readAsDataURL(file);
+    try {
+      const res = await fetch('/api', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const text = await res.text();
+      console.log("Response:", text);
+
+      let json;
+      try {
+        json = JSON.parse(text);
+      } catch {
+        json = { status: "error", message: "Respon tidak valid dari server." };
+      }
+
+      if (json.status === 'success') {
+        msg.textContent = '✅ Data berhasil disimpan!';
+        form.reset();
+      } else {
+        msg.textContent = '❌ ' + json.message;
+      }
+    } catch (err) {
+      msg.textContent = '⚠️ Gagal mengirim: ' + err.message;
+    }
   });
   </script>
 </body>
