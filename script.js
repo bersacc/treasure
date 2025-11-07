@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('resellerForm');
+    // Menggunakan ID formulir yang ada di HTML: registrationCustomForm
+    const form = document.getElementById('registrationCustomForm');
+    
     if (!form) {
-        console.error("Elemen formulir dengan ID 'resellerForm' tidak ditemukan. JavaScript tidak akan berjalan.");
+        console.error("Elemen formulir dengan ID 'registrationCustomForm' tidak ditemukan. JavaScript tidak akan berjalan.");
         return; 
     }
 
@@ -12,14 +14,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const appScriptUrl = 'https://treasuress.pages.dev/api'; 
 
         const formData = new FormData(form);
-        const fileInput = document.getElementById('screenshotFile'); 
+        
+        // Menggunakan ID input file yang ada di HTML: ssKepemilikan
+        const fileInput = document.getElementById('ssKepemilikan'); 
+        
+        // Menggunakan ID tombol submit yang ada di HTML: submitButton
         const submitButton = document.getElementById('submitButton'); 
-        const messageContainer = document.getElementById('message');
+        
+        // Menggunakan ID wadah pesan yang ada di HTML: responseMessage
+        const messageContainer = document.getElementById('responseMessage');
 
-        // Tambahkan cek keamanan untuk elemen opsional
+        // Tampilkan pesan loading
         if (messageContainer) {
             messageContainer.innerHTML = 'Memproses pendaftaran... Mohon tunggu.';
-            messageContainer.className = 'loading';
+            messageContainer.className = 'response-message loading';
         }
         if (submitButton) {
             submitButton.disabled = true;
@@ -29,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!fileInput || fileInput.files.length === 0) {
             if (messageContainer) {
                 messageContainer.innerHTML = 'Gagal: File screenshot wajib diunggah.';
-                messageContainer.className = 'error';
+                messageContainer.className = 'response-message error';
             }
             if (submitButton) {
                 submitButton.disabled = false;
@@ -46,13 +54,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // Siapkan objek data untuk dikirim sebagai JSON
             const object = {};
             formData.forEach((value, key) => {
-                // Abaikan input file asli
-                if (key !== fileInput.name) { 
+                // Abaikan input file asli (name="ssBukti")
+                if (key !== 'ssBukti') { 
                     object[key] = value;
                 }
             });
             
-            // Tambahkan Base64 dan Nama File ke objek data
+            // Tambahkan Base64 dan Nama File ke objek data (sesuai yang dicari Apps Script)
             object['Screenshot Bukti Kepemilikan Account BA_base64'] = base64Data;
             object['Screenshot Bukti Kepemilikan Account BA_filename'] = file.name; 
 
@@ -78,11 +86,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (messageContainer) {
                     if (data.status === 'success') {
                         messageContainer.innerHTML = `Sukses: ${data.message}`;
-                        messageContainer.className = 'success';
+                        messageContainer.className = 'response-message success';
                         form.reset(); 
                     } else {
                         messageContainer.innerHTML = `Gagal: ${data.message || 'Terjadi error di server Apps Script.'}`;
-                        messageContainer.className = 'error';
+                        messageContainer.className = 'response-message error';
                     }
                 }
             })
@@ -93,9 +101,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (errorMessage.startsWith('<!DOCTYPE')) {
                         messageContainer.innerHTML = `Gagal: Unexpected token '<', "<!DOCTYPE "... is not valid JSON. (Periksa Otorisasi Apps Script)`;
                     } else {
-                         messageContainer.innerHTML = `Gagal: ${errorMessage}`;
+                         messageContainer.innerHTML = `Gagal: Terjadi error koneksi: ${errorMessage}`;
                     }
-                    messageContainer.className = 'error';
+                    messageContainer.className = 'response-message error';
                 }
             })
             .finally(() => {
