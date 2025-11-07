@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const fileInput = form.querySelector('input[name="ssBukti"]');
 
         // --- INI URL WEB APP APPS SCRIPT ANDA ---
-        const appScriptUrl = 'https://accouner.site/api/submit-form'; // <--- PASTIKAN INI URL YANG BENAR DAN TIDAK BERUBAH
+        const appScriptUrl = 'https://treasuress.pages.dev/api'; // <--- PASTIKAN INI URL YANG BENAR DAN TIDAK BERUBAH
         // ----------------------------------------
 
         try {
