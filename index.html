@@ -70,19 +70,19 @@
   <h1>Formulir Pendaftaran BA</h1>
   <form id="regForm">
     <label>Nama Lengkap</label>
-    <input type="text" name="nama" required />
+    <input type="text" name="nama" required>
 
     <label>Platform Promosi</label>
-    <input type="text" name="platform" placeholder="Contoh: Instagram, TikTok, Shopee" required />
+    <input type="text" name="platform" required placeholder="Contoh: Instagram, TikTok, Shopee">
 
     <label>Account BA</label>
-    <input type="text" name="account" placeholder="@username atau link akun" required />
+    <input type="text" name="account" required placeholder="@username atau link akun">
 
     <label>Nomor WhatsApp</label>
-    <input type="tel" name="whatsapp" placeholder="08xxxxxxxxxx" required />
+    <input type="tel" name="whatsapp" required placeholder="08xxxxxxxxxx">
 
     <label>Screenshot Bukti Kepemilikan Akun BA</label>
-    <input type="file" name="bukti" accept="image/*" required />
+    <input type="file" name="bukti" accept="image/*" required>
 
     <button type="submit">Kirim</button>
     <div id="msg"></div>
@@ -94,10 +94,16 @@
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    msg.textContent = 'Mengirim data...';
+    msg.textContent = 'Mengirim data ke server...';
 
     const formData = new FormData(form);
     const file = formData.get('bukti');
+
+    if (!file) {
+      msg.textContent = "⚠️ Harap unggah file screenshot terlebih dahulu.";
+      return;
+    }
+
     const reader = new FileReader();
 
     reader.onload = async () => {
@@ -113,6 +119,8 @@
         mimeType: file.type
       };
 
+      msg.textContent = "📡 Mengirim ke server...";
+
       try {
         const res = await fetch('/api', {
           method: 'POST',
@@ -121,9 +129,9 @@
         });
 
         const text = await res.text();
-        console.log('Response:', text);
-        const data = JSON.parse(text);
+        console.log("Response:", text);
 
+        const data = JSON.parse(text);
         if (data.status === 'success') {
           msg.textContent = '✅ Data berhasil disimpan!';
           form.reset();
