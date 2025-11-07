@@ -1,85 +1,144 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Formulir Pendaftaran BA</title>
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      background: #121212;
-      color: #f1f1f1;
+      background: #111;
+      color: #fff;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
       min-height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      color: #ffd700;
+      margin-bottom: 1rem;
     }
     form {
-      background: #1e1e1e;
-      padding: 25px 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-      width: 100%;
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+      width: 90%;
       max-width: 400px;
     }
-    input, select {
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+    input[type="text"],
+    input[type="tel"],
+    input[type="file"] {
       width: 100%;
-      margin-bottom: 15px;
       padding: 10px;
+      margin-top: 5px;
       border-radius: 8px;
       border: none;
-      outline: none;
+      background: #222;
+      color: #fff;
     }
     button {
+      margin-top: 15px;
       width: 100%;
-      padding: 10px;
-      background: #4CAF50;
+      padding: 12px;
+      background: #ffd700;
+      color: #111;
+      font-weight: bold;
       border: none;
       border-radius: 8px;
-      color: white;
-      font-weight: bold;
       cursor: pointer;
+      transition: 0.3s;
     }
-    button:hover { background: #45a049; }
+    button:hover {
+      background: #ffea61;
+    }
+    #msg {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: 500;
+    }
   </style>
 </head>
 <body>
+  <h1>Formulir Pendaftaran BA</h1>
   <form id="regForm">
-    <h2>Formulir Pendaftaran BA</h2>
-    <input type="text" name="nama" placeholder="Nama Lengkap" required>
-    <select name="platform" required>
-      <option value="">Pilih Platform Promosi</option>
-      <option value="Instagram">Instagram</option>
-      <option value="TikTok">TikTok</option>
-      <option value="YouTube">YouTube</option>
-      <option value="X (Twitter)">X (Twitter)</option>
-    </select>
-    <input type="text" name="account" placeholder="Username / Link Akun" required>
-    <input type="tel" name="whatsapp" placeholder="Nomor WhatsApp" required>
-    <label>Upload Bukti Kepemilikan Akun:</label>
-    <input type="file" name="bukti" accept="image/*" required>
+    <label>Nama Lengkap</label>
+    <input type="text" name="nama" required />
+
+    <label>Platform Promosi</label>
+    <input type="text" name="platform" placeholder="Contoh: Instagram, TikTok, Shopee" required />
+
+    <label>Account BA</label>
+    <input type="text" name="account" placeholder="@username atau link akun" required />
+
+    <label>Nomor WhatsApp</label>
+    <input type="tel" name="whatsapp" placeholder="08xxxxxxxxxx" required />
+
+    <label>Screenshot Bukti Kepemilikan Akun BA</label>
+    <input type="file" name="bukti" accept="image/*" required />
+
     <button type="submit">Kirim</button>
+    <div id="msg"></div>
   </form>
 
   <script>
-    const scriptURL = "PASTE_WEB_APP_URL_DI_SINI"; // URL dari Google Apps Script
-    const form = document.getElementById("regForm");
+  const form = document.getElementById('regForm');
+  const msg = document.getElementById('msg');
 
-    form.addEventListener("submit", e => {
-      e.preventDefault();
-      const formData = new FormData(form);
-      fetch(scriptURL, { method: "POST", body: formData })
-        .then(res => res.json())
-        .then(data => {
-          if (data.result === "success") {
-            alert("Pendaftaran berhasil!\nFile tersimpan di Google Drive.");
-            form.reset();
-          } else {
-            alert("Terjadi kesalahan: " + data.message);
-          }
-        })
-        .catch(err => alert("Gagal mengirim data: " + err));
-    });
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.textContent = 'Mengirim data...';
+
+    const formData = new FormData(form);
+    const file = formData.get('bukti');
+    const reader = new FileReader();
+
+    reader.onload = async () => {
+      const base64File = reader.result.split(',')[1];
+
+      const payload = {
+        nama: formData.get('nama'),
+        platform: formData.get('platform'),
+        account: formData.get('account'),
+        whatsapp: formData.get('whatsapp'),
+        fileName: file.name,
+        fileData: base64File,
+        mimeType: file.type
+      };
+
+      try {
+        const res = await fetch('/api', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const text = await res.text();
+        console.log('Response:', text);
+        const data = JSON.parse(text);
+
+        if (data.status === 'success') {
+          msg.textContent = '✅ Data berhasil disimpan!';
+          form.reset();
+        } else {
+          msg.textContent = '❌ ' + (data.message || 'Terjadi kesalahan.');
+        }
+
+      } catch (err) {
+        console.error(err);
+        msg.textContent = '⚠️ Gagal mengirim: ' + err.message;
+      }
+    };
+
+    reader.readAsDataURL(file);
+  });
   </script>
 </body>
 </html>
