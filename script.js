@@ -1,3 +1,6 @@
+// =======================================================================
+// 1. LOGIKA SUBMIT FORMULIR (Dijalankan setelah semua elemen HTML dimuat)
+// =======================================================================
 document.addEventListener('DOMContentLoaded', function() {
     // Menggunakan ID formulir yang ada di HTML: registrationCustomForm
     const form = document.getElementById('registrationCustomForm');
@@ -10,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        // 1. Tentukan URL Proxy Cloudflare Anda
+        // Tentukan URL Proxy Cloudflare Anda
         const appScriptUrl = 'https://treasuress.pages.dev/api'; 
 
         const formData = new FormData(form);
@@ -27,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Tampilkan pesan loading
         if (messageContainer) {
             messageContainer.innerHTML = 'Memproses pendaftaran... Mohon tunggu.';
-            messageContainer.className = 'response-message loading';
+            messageContainer.className = 'response-message show loading';
         }
         if (submitButton) {
             submitButton.disabled = true;
@@ -37,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!fileInput || fileInput.files.length === 0) {
             if (messageContainer) {
                 messageContainer.innerHTML = 'Gagal: File screenshot wajib diunggah.';
-                messageContainer.className = 'response-message error';
+                messageContainer.className = 'response-message show error';
             }
             if (submitButton) {
                 submitButton.disabled = false;
@@ -62,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Tambahkan Base64 dan Nama File ke objek data (sesuai yang dicari Apps Script)
             object['Screenshot Bukti Kepemilikan Account BA_base64'] = base64Data;
-            object['Screenshot Bukti Kepemilikan Account BA_filename'] = file.name; 
+            object['Screenshot Bukutuan Kepemilikan Account BA_filename'] = file.name; 
 
             // Kirim data ke Cloudflare Proxy
             fetch(appScriptUrl, {
@@ -86,11 +89,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (messageContainer) {
                     if (data.status === 'success') {
                         messageContainer.innerHTML = `Sukses: ${data.message}`;
-                        messageContainer.className = 'response-message success';
+                        messageContainer.className = 'response-message show success';
                         form.reset(); 
                     } else {
                         messageContainer.innerHTML = `Gagal: ${data.message || 'Terjadi error di server Apps Script.'}`;
-                        messageContainer.className = 'response-message error';
+                        messageContainer.className = 'response-message show error';
                     }
                 }
             })
@@ -103,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                          messageContainer.innerHTML = `Gagal: Terjadi error koneksi: ${errorMessage}`;
                     }
-                    messageContainer.className = 'response-message error';
+                    messageContainer.className = 'response-message show error';
                 }
             })
             .finally(() => {
@@ -116,3 +119,28 @@ document.addEventListener('DOMContentLoaded', function() {
         reader.readAsDataURL(file);
     });
 });
+
+
+// =======================================================================
+// 2. FUNGSI TOGGLE FORMULIR (Membuat formulir muncul saat diklik)
+// =======================================================================
+// Fungsi ini harus global agar dapat dipanggil oleh onclick="toggleRegistrationForm()" di HTML
+function toggleRegistrationForm() {
+    // Konten formulir yang disembunyikan/ditampilkan
+    const content = document.querySelector('.registration-form-content'); 
+    // Section induk untuk mengaktifkan perubahan ikon panah (▼/▲) di CSS
+    const section = document.querySelector('.registration-section'); 
+
+    if (content && section) {
+        // Menggunakan toggle untuk menambahkan atau menghapus kelas 'active'
+        content.classList.toggle('active'); 
+        section.classList.toggle('active'); 
+        
+        // Opsional: Untuk memastikan elemen terlihat (jika CSS tidak sepenuhnya mendefinisikannya)
+        if (content.classList.contains('active')) {
+            content.style.display = 'block'; 
+        } else {
+            content.style.display = 'block'; // Pertahankan display: block, biarkan max-height:0 yang menyembunyikan
+        }
+    }
+}
