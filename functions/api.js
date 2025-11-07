@@ -1,72 +1,55 @@
-// File: functions/api.js (Cloudflare Pages Function - Proxy)
-// Fungsi ini merespons request ke /api
-
+/**
+ * Cloudflare Pages Function (Proxy) untuk meneruskan permintaan formulir ke Google Apps Script.
+ * Mengambil URL Apps Script dari Environment Variable/Secret bernama API_URL.
+ */
 export async function onRequest(context) {
-  const clientRequest = context.request;
-  // URL Apps Script (Web App) diambil dari Environment Variable Cloudflare
-  const apiUrl = context.env.API_URL; 
+    // Ambil URL Apps Script dari Cloudflare Secret
+    const apiUrl = context.env.API_URL; 
 
-  // Menangani CORS pre-flight OPTIONS request dan validasi non-POST
-  if (clientRequest.method !== 'POST') {
-    // Header CORS standar yang dibutuhkan oleh browser
-    const corsHeaders = {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type'
-    };
+    // Cek metode request. Hanya izinkan POST.
+    if (context.request.method !== 'POST') {
+        return new Response('Method Not Allowed', { status: 405 });
+    }
 
-    // Jika metode adalah OPTIONS (pre-flight check), kembalikan respons kosong 204
-    if (clientRequest.method === 'OPTIONS') {
-        return new Response(null, {
-            status: 204,
-            headers: corsHeaders
+    // Pastikan URL Apps Script ada
+    if (!apiUrl) {
+         return new Response(JSON.stringify({
+            status: 'error',
+            message: 'Konfigurasi Proxy Gagal: Variabel API_URL tidak ditemukan.'
+        }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
         });
     }
 
-    // Jika metode lain selain POST atau OPTIONS
-    return new Response(JSON.stringify({ error: "Hanya metode POST yang diizinkan." }), {
-        status: 405,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders }
-    });
-  }
-  
-  // Cek jika API_URL (Apps Script) belum dikonfigurasi di Cloudflare
-  if (!apiUrl) {
-       return new Response(JSON.stringify({ error: "API_URL belum dikonfigurasi di Variabel Lingkungan Cloudflare." }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
-    });
-  }
+    try {
+        // 1. Baca body dari frontend sebagai JSON (karena script.js mengirim JSON)
+        const requestBody = await context.request.json(); 
 
-  try {
-    // Meneruskan request POST (beserta body formData dan headers) ke Apps Script
-    // Apps Script akan menerima ini sebagai event 'e' di fungsi doPost(e)
-    const res = await fetch(apiUrl, {
-      method: 'POST', 
-      headers: clientRequest.headers, 
-      body: clientRequest.body,       
-      redirect: 'follow', // Mengikuti redirect jika Apps Script menggunakannya
-    });
-    
-    // Meneruskan Respons (JSON) dari Apps Script kembali ke browser
-    const responseText = await res.text();
+        // 2. Teruskan request ke Apps Script
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            // PENTING: Header Content-Type harus diatur agar Apps Script dapat memproses data JSON
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody), // Meneruskan body sebagai string JSON
+        });
 
-    return new Response(responseText, {
-      status: res.status, 
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        // Tambahkan header CORS untuk respons balik
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type'
-      },
-    });
+        // 3. Mengembalikan respons (JSON/Error) dari Apps Script kembali ke frontend
+        return response;
 
-  } catch (err) {
-    console.error("Fetch failed:", err);
-    return new Response(JSON.stringify({ error: "Gagal memproses pendaftaran. Error Proxy Internal." }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-    });
-  }
+    } catch (error) {
+        // Log error di log Cloudflare (jika request.json() gagal, dll.)
+        console.error('Proxy Error:', error.message);
+        
+        // Kembalikan respons error JSON agar script.js tidak menampilkan error <!DOCTYPE
+        return new Response(JSON.stringify({
+            status: 'error',
+            message: 'Gagal memproses request di proxy (Error: ' + error.message + ')'
+        }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
 }
