@@ -14,6 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
     registrationForm.addEventListener('submit', async function(event) {
         event.preventDefault(); // Mencegah pengiriman formulir default (reload halaman)
 
+        // ⚠️ GANTI INI NANTI ⚠️
+        // Setelah Anda deploy ke Cloudflare Pages, ganti placeholder ini.
+        // Formatnya HARUS: https://[nama-proyek-baru].pages.dev/api
+        const appScriptUrl = 'URL_CLOUDFLARE_PROXY_BARU_ANDA/api'; 
+        // -----------------------------------------------------------------------
+
         // 1. **Mulai Efek Loading pada Tombol & Sembunyikan Pesan Lama**
         submitButton.disabled = true; 
         submitButton.classList.add('loading'); 
@@ -23,14 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
         whatsappButtonContainer.classList.remove('show'); 
 
         const form = event.target;
-        // PENTING: Nama input harus sama dengan yang di HTML: name="ssBukti"
         const fileInput = form.querySelector('input[name="ssBukti"]');
 
-        // --- GANTI INI DENGAN URL CLOUDFLARE PROXY ANDA NANTI ---
-        const appScriptUrl = 'URL_CLOUDFLARE_PROXY_BARU_ANDA'; 
-        // --------------------------------------------------------
-
         try {
+            if (appScriptUrl.includes('URL_CLOUDFLARE_PROXY_BARU_ANDA')) {
+                throw new Error('URL Proxy belum diganti. Harap ganti placeholder URL di script.js.');
+            }
+            
             const formData = new FormData(form);
             let isFileAttached = false;
 
@@ -40,19 +45,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const reader = new FileReader();
                 isFileAttached = true;
 
-                // Membaca file dan mengkonversinya menjadi string Base64 (Promise)
                 const base64Data = await new Promise((resolve, reject) => {
                     reader.onload = () => resolve(reader.result);
                     reader.onerror = error => reject(error);
-                    reader.readAsDataURL(file); // Baca file sebagai Data URL
+                    reader.readAsDataURL(file); 
                 });
 
                 // Menambahkan Base64 dan nama file ke FormData
-                // Nama field ini harus diambil dan diolah di Google Apps Script
                 formData.append('Screenshot Bukti Kepemilikan Account BA_base64', base64Data);
                 formData.append('Screenshot Bukti Kepemilikan Account BA_filename', file.name);
                 
-                // Hapus input file asli agar tidak dikirim (Apps Script doPost tidak bisa baca file langsung)
+                // Hapus input file asli
                 formData.delete('ssBukti'); 
             } else {
                 isFileAttached = false;
@@ -70,15 +73,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                // Mencoba membaca respons error dari server/proxy
-                const errorText = await response.text();
-                // Mengurai JSON jika memungkinkan, jika tidak menggunakan teks mentah
+                let errorText = await response.text();
                 try {
                     const errorJson = JSON.parse(errorText);
-                    throw new Error(errorJson.message || errorJson.error || `HTTP error! status: ${response.status}`);
+                    errorText = errorJson.message || errorJson.error || `HTTP error! status: ${response.status}`;
                 } catch (e) {
-                    throw new Error(`HTTP error! status: ${response.status}. Pesan server: ${errorText.substring(0, 100)}...`);
+                    errorText = `HTTP error! status: ${response.status}. Pesan server: ${errorText.substring(0, 100)}...`;
                 }
+                throw new Error(errorText);
             }
 
             const result = await response.json();
@@ -87,20 +89,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.status === 'success') {
                 responseMessage.textContent = 'Selamat, formulir Anda berhasil dikirim!';
                 responseMessage.classList.add('show', 'success');
-                form.reset(); // Mengosongkan semua input di formulir
-                whatsappButtonContainer.classList.add('show'); // Tampilkan tombol WhatsApp
+                form.reset(); 
+                whatsappButtonContainer.classList.add('show'); 
             } else {
                 const errorMessage = result.message || 'Terjadi kesalahan tidak diketahui dari server.';
                 throw new Error(errorMessage);
             }
 
         } catch (error) {
-            // 3. Tangani semua kesalahan (Jaringan, Validasi, atau Server)
+            // 3. Tangani semua kesalahan 
             responseMessage.textContent = 'Gagal: ' + error.message;
             responseMessage.classList.add('show', 'error');
             console.error('Error during form submission:', error);
         } finally {
-            // 4. Kembali ke kondisi awal tombol (selesai loading)
+            // 4. Kembali ke kondisi awal tombol
             submitButton.disabled = false;
             submitButton.classList.remove('loading');
             if (buttonContent) buttonContent.textContent = 'Daftar Sekarang';
