@@ -1,25 +1,28 @@
 export default {
-  async fetch(request) {
-    if (request.method === "POST") {
+  async fetch(request, env) {
+    if (request.method === 'POST') {
       try {
-        const formData = await request.formData();
-        const response = await fetch("https://script.google.com/macros/s/AKfycbx1234567890/exec", {
-          method: "POST",
-          body: formData,
+        const body = await request.text();
+        const payload = JSON.parse(body);
+
+        const res = await fetch(env.APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
 
-        const text = await response.text();
-        const data = text ? JSON.parse(text) : { status: "error", message: "No response" };
-        return new Response(JSON.stringify(data), {
-          headers: { "Content-Type": "application/json" },
+        const text = await res.text();
+        return new Response(text, {
+          headers: { 'Content-Type': 'application/json' }
         });
+
       } catch (err) {
-        return new Response(JSON.stringify({ status: "error", message: err.message }), {
-          headers: { "Content-Type": "application/json" },
+        return new Response(JSON.stringify({ status: 'error', message: err.message }), {
+          headers: { 'Content-Type': 'application/json' },
+          status: 500
         });
       }
     }
-
-    return new Response("Invalid request", { status: 400 });
-  },
+    return new Response('Invalid request', { status: 400 });
+  }
 };
