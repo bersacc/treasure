@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Tambahkan Base64 dan Nama File ke objek data (sesuai yang dicari Apps Script)
             object['Screenshot Bukti Kepemilikan Account BA_base64'] = base64Data;
-            object['Screenshot Bukutuan Kepemilikan Account BA_filename'] = file.name; 
+            object['Screenshot Bukti Kepemilikan Account BA_filename'] = file.name; 
 
             // Kirim data ke Cloudflare Proxy
             fetch(appScriptUrl, {
