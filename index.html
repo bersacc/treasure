@@ -53,8 +53,8 @@
     </form>
 
     <script>
-        // URL Web App Skrip Mandiri Terbaru Anda
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuZQ_jLy71SlCV-FI6L_4pTXI1VbRlTHskZxCwoc64t3pAA0Nd9L5iwBDgBhToH-S-/exec";
+        // URL WEB APP FINAL DARI AKUN BARU ANDA
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzkVyldW_hFyRIHajqqvogZhwvL2FeRJjBTNjXk4lqaLBh-ms0-85K-gfPsNSDffvzBrg/exec";
 
         document.getElementById('registrationForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
@@ -75,31 +75,19 @@
                 submitButton.textContent = 'Kirim Pendaftaran';
                 return;
             }
-            
-            // Batasan ukuran file (misalnya, 8MB) untuk mencegah timeout Apps Script
-            const MAX_SIZE_MB = 8; 
-            if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-                 messageContainer.innerHTML = `<div class="message error">Ukuran file melebihi ${MAX_SIZE_MB}MB. Harap gunakan file yang lebih kecil.</div>`;
-                submitButton.disabled = false;
-                submitButton.textContent = 'Kirim Pendaftaran';
-                return;
-            }
 
-            // Gunakan FileReader untuk mengubah file menjadi Base64
             const reader = new FileReader();
             reader.readAsDataURL(file); 
 
             reader.onload = function() {
-                // Base64 sudah memiliki header 'data:image/jpeg;base64,' yang akan diproses di Apps Script
                 const base64DataWithHeader = reader.result;
                 
-                // Siapkan data untuk dikirim ke Apps Script
                 const formData = {
                     nama: form.nama.value,
                     platform: form.platform.value,
                     accountBA: form.accountBA.value,
                     noWA: form.noWA.value,
-                    screenshotBase64: base64DataWithHeader, // Kirim data Base64 utuh
+                    screenshotBase64: base64DataWithHeader,
                     screenshotName: file.name,
                     screenshotType: file.type 
                 };
@@ -116,7 +104,6 @@
                 })
                 .then(response => {
                     if (!response.ok) {
-                        // Jika respons tidak OK (misalnya 500, 404), throw error
                         throw new Error('Network response was not ok, status: ' + response.status);
                     }
                     return response.json();
@@ -130,7 +117,6 @@
                     }
                 })
                 .catch(error => {
-                    // Ini akan menangani error CORS atau kegagalan jaringan
                     messageContainer.innerHTML = `<div class="message error">🚨 Terjadi kesalahan jaringan atau server: ${error}</div>`;
                 })
                 .finally(() => {
