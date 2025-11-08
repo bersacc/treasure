@@ -1,216 +1,299 @@
-/* ========================================================== */
-/* === GLOBAL & LAYOUT STYLES (DARK MODE) === */
-/* ========================================================== */
-body { 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    background-color: #1e1e1e; /* Latar belakang gelap */
-    color: #f0f0f0; /* Teks terang */
+/* --- Umum & Reset Ringan --- */
+html, body {
     margin: 0;
     padding: 0;
+    font-family: 'Inter', sans-serif; /* Font utama: Inter */
+    background: #f8f8f8; /* Latar Belakang Abu-abu Sangat Muda */
+    color: #333333;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 20px;
-}
-
-h1 { 
+/* --- Header Utama --- */
+header {
+    background-color: #004d99; /* Navy Blue Gelap */
+    color: white;
+    padding: 40px 20px;
     text-align: center;
-    color: #FFC107; /* Aksen Kuning */
-    padding: 20px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
     margin: 0;
-    border-bottom: 2px solid #444; 
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
 }
 
-/* ========================================================== */
-/* === DROPDOWN/TOGGLE STYLES (PRICELIST & POLICY) === */
-/* ========================================================== */
+/* --- Kontainer Utama --- */
+.container {
+    padding: 20px;
+    max-width: 1100px;
+    margin: 20px auto;
+    flex-grow: 1;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* --- Styling <details> dan <summary> --- */
 details {
-    max-width: 90%;
-    margin: 20px auto; 
-    background-color: #2c2c2c;
-    border: 1px solid #444;
+    background: #ffffff;
     border-radius: 12px;
-    padding: 0 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    border: 1px solid #e0e0e0;
 }
 
 summary {
-    font-size: 1.5em;
-    font-weight: bold;
-    padding: 15px 0;
+    font-family: 'Inter', sans-serif;
+    color: #1f2937;
+    background-color: #f0f4f8; /* Light blue-gray background */
+    padding: 20px 25px;
+    border-radius: 12px 12px 0 0;
+    font-size: 1.4rem;
+    font-weight: 600;
     cursor: pointer;
-    color: #4CAF50; /* Warna Judul Dropdown */
-    list-style: none; 
-    text-align: center;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s;
+    border-bottom: 1px solid #e0e0e0;
+    /* Mencegah highlight teks saat diklik */
+    -webkit-user-select: none; 
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+summary:hover {
+    background-color: #e5e7eb;
 }
 
-/* --- BLOCK CODE YANG DIHAPUS (Panah) --- */
-
-summary::-webkit-details-marker {
-    display: none; 
+/* PERBAIKAN: Menghilangkan fokus outline dan blok warna saat klik/sentuh */
+summary:focus, summary:active {
+    outline: none; 
+    box-shadow: none; 
+    -webkit-tap-highlight-color: transparent; 
 }
 
-/* Blok kode berikut dihilangkan:
-    summary::after { ... }
-    details[open] summary::after { ... }
-*/
 
-/* ========================================================== */
-/* === PRICELIST CARDS STYLES === */
-/* ========================================================== */
-
-#pricelist-content {
-    padding-bottom: 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 15px; 
-    text-align: center;
-}
-
-.price-card {
-    background-color: #333; 
-    border: 1px solid #555;
-    border-radius: 12px;
-    padding: 15px; 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    text-align: left;
+summary::after {
+    content: '\25BC'; /* Ikon panah bawah */
+    font-size: 1.1rem;
+    color: #007bff;
     transition: transform 0.3s;
 }
-
-.price-card:hover {
-    transform: translateY(-5px); 
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+details[open] summary {
+    border-bottom: none;
+}
+details[open] summary::after {
+    content: '\25B2'; /* Ikon panah atas */
+    transform: rotate(0deg);
 }
 
-.price-card h3 {
-    color: #00bcd4; 
-    border-bottom: 2px solid #555;
-    padding-bottom: 8px; 
+/* Konten di dalam details (menggunakan Grid) */
+#pricelist-content, .policy-content {
+    padding: 25px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+/* --- Styling Price Card / Policy Card --- */
+.price-card, .policy-card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s, transform 0.3s;
+}
+.price-card:hover, .policy-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Styling Judul Card */
+.price-card h3, .policy-card h3 {
+    font-family: 'Inter', sans-serif;
+    color: #007bff; /* Warna Blue Accent */
+    font-size: 1.15rem;
+    font-weight: 600;
     margin-top: 0;
-    margin-bottom: 10px; 
+    padding-bottom: 5px;
+    border-bottom: 2px solid #e0f2ff;
+    margin-bottom: 15px;
+}
+.price-card p, .policy-card p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #555;
+    margin: 0;
+}
+.policy-content strong {
+    color: #007bff;
 }
 
+/* Styling Daftar Harga */
 .price-list {
     list-style: none;
     padding: 0;
     margin: 0;
 }
-
 .price-list li {
     display: flex;
     justify-content: space-between;
-    padding: 6px 0; 
-    border-bottom: 1px dashed #555;
-    font-size: 1.1em;
+    margin: 12px 0;
+    font-size: 1rem;
+    border-bottom: 1px dashed #e0e0e0;
+    padding-bottom: 5px;
 }
-
 .price-list li:last-child {
     border-bottom: none;
+    padding-bottom: 0;
+}
+.price-list span {
+    font-weight: 500;
+}
+.price-list .price-range {
+    color: #dc3545; /* Warna Merah tegas untuk harga */
+    font-weight: 700;
+    font-size: 1.05rem;
 }
 
-.price-range {
-    font-weight: bold;
-    color: #FFC107; 
-}
-
-.special-note {
-    background-color: #4CAF50; 
-    color: #1e1e1e;
-    font-weight: bold;
-    grid-column: 1 / -1; 
-}
-
-.special-note h3 {
-    color: #1e1e1e;
-    border-bottom-color: #1e1e1e;
-}
-
-
-/* ========================================================== */
-/* === POLICY STYLES (NEW) === */
-/* ========================================================== */
-.policy-content {
-    padding: 10px 0 20px 0;
-    display: grid; 
-    grid-template-columns: 1fr;
-    gap: 10px; 
-}
-
-.policy-card {
-    background-color: #333;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    text-align: left;
-}
-
-.policy-card h3 {
-    color: #FFC107; 
-    font-size: 1.1em;
-    margin: 0 0 5px 0;
-    font-weight: bold;
-}
-
-.policy-card p {
-    margin: 0;
-    line-height: 1.4;
-    font-size: 1em;
-}
-
-
-/* ========================================================== */
-/* === FORM STYLES === */
-/* ========================================================== */
-
+/* --- Adaptasi Formulir Pendaftaran --- */
 #registrationForm {
-    max-width: 600px;
-    background: #2c2c2c; 
-    padding: 30px; 
-    border-radius: 8px; 
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    margin: 40px auto; 
-    border: 1px solid #444;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 40px auto;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    border: 1px solid #e0e0e0;
 }
-
 #registrationForm h2 {
-    color: #f0f0f0;
-    border-bottom: 1px solid #444;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
+    font-family: 'Inter', sans-serif;
+    color: #004d99; /* Navy Blue Gelap */
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 25px;
     text-align: center;
+    border-bottom: 3px solid #007bff;
+    padding-bottom: 10px;
 }
 
-label { display: block; margin-top: 10px; font-weight: bold; color: #f0f0f0; } 
+label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 5px;
+    display: block;
+}
 
-input[type="text"], input[type="tel"], select, input[type="file"] {
-    width: 100%; padding: 10px; 
-    margin-top: 5px; 
-    border: 1px solid #555; 
-    box-sizing: border-box; 
+input[type="text"],
+input[type="tel"],
+input[type="file"],
+select {
+    width: 100%;
+    padding: 12px 15px;
+    box-sizing: border-box;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: #444;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+input:focus, select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+input[type="file"]::file-selector-button {
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    border-right: 1px solid #d0d0d0;
+    padding: 8px 12px;
+    margin-right: 15px;
     border-radius: 4px;
-    background-color: #333; 
-    color: #f0f0f0;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+input[type="file"]::file-selector-button:hover {
+    background-color: #e0e0e0;
 }
 
 #submit-btn {
-    background-color: #00bcd4; 
-    color: #1e1e1e; 
-    padding: 15px 20px; 
-    margin-top: 20px; 
-    border: none; 
-    cursor: pointer; 
-    width: 100%; 
-    border-radius: 4px; 
-    font-size: 16px; 
-    font-weight: bold;
-    transition: background-color 0.3s;
+    padding: 15px;
+    background-color: #28a745; /* Green for action */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    margin-top: 25px;
+    text-transform: uppercase;
+}
+#submit-btn:hover {
+    background-color: #218838;
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
 }
 
-#submit-btn:hover:not([disabled]) { background-color: #0097a7; }
-#submit-btn[disabled] { background-color: #555; cursor: not-allowed; color: #aaa;}
+/* Styling pesan di bawah form */
+#message-container {
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
 
-.message { margin-top: 15px; padding: 15px; border-radius: 4px; text-align: center; font-weight: bold; }
-.success { background-color: #38761d; color: #fff; border: 1px solid #274e13; }
-.error { background-color: #cc0000; color: #fff; border: 1px solid #660000; }
+/* Garis Pemisah */
+hr {
+    border: 0;
+    border-top: 1px solid #cccccc;
+    margin: 40px 0;
+}
+
+/* --- Styling Footer --- */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #f0f0f0; /* Latar belakang abu-abu muda */
+    border-top: 1px solid #e0e0e0;
+    margin-top: 40px;
+}
+
+.footer-copyright {
+    font-size: 0.9rem;
+    color: #555555;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+}
+
+/* --- Media Query untuk Desktop (Grid Layout) --- */
+@media (min-width: 900px) {
+    /* Membuat content grid 3 kolom di desktop */
+    #pricelist-content {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    /* Memastikan kebijakan dan S&K tetap 2 kolom per baris di dalam konten */
+    .policy-content {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
