@@ -10,18 +10,22 @@
         input[type="text"], input[type="tel"], select, input[type="file"] {
             width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; box-sizing: border-box; border-radius: 4px;
         }
-        input[type="submit"] {
-            background-color: #007BFF; color: white; padding: 15px 20px; margin-top: 20px; border: none; cursor: pointer; width: 100%; border-radius: 4px; font-size: 16px;
+        #submit-btn {
+            background-color: #007BFF; color: white; padding: 15px 20px; margin-top: 20px; border: none; cursor: pointer; width: 100%; border-radius: 4px; font-size: 16px; transition: background-color 0.3s;
         }
-        input[type="submit"]:hover { background-color: #0056b3; }
+        #submit-btn:hover:not([disabled]) { background-color: #0056b3; }
+        #submit-btn[disabled] { background-color: #ccc; cursor: not-allowed; }
         form { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .message { margin-top: 15px; padding: 15px; border-radius: 4px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     </style>
 </head>
 <body>
 
     <h1>Formulir Pendaftaran Akun BA</h1>
     
-    <form method="post" action="https://script.google.com/macros/s/AKfycbzq54SOFMc90p5SKNUAuT3JwLqqZkniETSfIyYfpsSKtmAU9BM4wqOqMeMP09MX7GHs/exec" enctype="multipart/form-data">
+    <form id="registrationForm">
         
         <label for="nama">Nama Lengkap:</label>
         <input type="text" id="nama" name="nama" required>
@@ -41,11 +45,90 @@
         <label for="noWA">Nomor WhatsApp Aktif:</label>
         <input type="tel" id="noWA" name="noWA" placeholder="Contoh: 08123456789" required>
 
-        <label for="screenshot">Screenshot Bukti Kepemilikan Account BA:</label>
+        <label for="screenshot">Screenshot Bukti Kepemilikan Account BA (JPG/PNG):</label>
         <input type="file" id="screenshot" name="screenshot" accept="image/png, image/jpeg" required>
 
-        <input type="submit" value="Kirim Pendaftaran">
+        <button type="submit" id="submit-btn">Kirim Pendaftaran</button>
+        <div id="message-container"></div>
     </form>
 
+    <script>
+        // URL Web App terbaru Anda
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzBc-WeYsJqGXZ97aUVfU9y8aOQMvGApl7uHaRKHrYErR1JWbiVUhfWfTZNWAVv9fkK/exec";
+
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            const form = e.target;
+            const submitButton = document.getElementById('submit-btn');
+            const messageContainer = document.getElementById('message-container');
+            
+            submitButton.disabled = true;
+            submitButton.textContent = 'Memproses... Harap Tunggu';
+            messageContainer.innerHTML = ''; 
+
+            const fileInput = document.getElementById('screenshot');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Mohon unggah file screenshot.');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Kirim Pendaftaran';
+                return;
+            }
+
+            // Gunakan FileReader untuk mengubah file menjadi Base64
+            const reader = new FileReader();
+            reader.readAsDataURL(file); 
+
+            reader.onload = function() {
+                // Hapus header Base64 (misalnya 'data:image/png;base64,')
+                const base64Data = reader.result.split(',')[1];
+                
+                // Siapkan data untuk dikirim ke Apps Script
+                const formData = {
+                    nama: form.nama.value,
+                    platform: form.platform.value,
+                    accountBA: form.accountBA.value,
+                    noWA: form.noWA.value,
+                    screenshotBase64: base64Data,
+                    screenshotName: file.name,
+                    screenshotType: file.type 
+                };
+
+                // Kirim data menggunakan Fetch API
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        messageContainer.innerHTML = '<div class="message success">Pendaftaran Berhasil! Data Anda sudah tersimpan.</div>';
+                        form.reset(); // Kosongkan formulir setelah sukses
+                    } else {
+                        messageContainer.innerHTML = `<div class="message error">Pendaftaran Gagal: ${result.message}</div>`;
+                    }
+                })
+                .catch(error => {
+                    messageContainer.innerHTML = `<div class="message error">Terjadi kesalahan jaringan atau server: ${error}</div>`;
+                })
+                .finally(() => {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Kirim Pendaftaran';
+                });
+            };
+
+            reader.onerror = function(error) {
+                messageContainer.innerHTML = `<div class="message error">Gagal membaca file: ${error}</div>`;
+                submitButton.disabled = false;
+                submitButton.textContent = 'Kirim Pendaftaran';
+            };
+        });
+    </script>
 </body>
 </html>
