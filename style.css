@@ -2,8 +2,8 @@
 html, body {
     margin: 0;
     padding: 0;
-    font-family: 'Inter', sans-serif; /* Font utama: Inter */
-    background: #f8f8f8; /* Latar Belakang Abu-abu Sangat Muda */
+    font-family: 'Inter', sans-serif; 
+    background: #f8f8f8; 
     color: #333333;
     overflow-x: hidden;
     min-height: 100vh;
@@ -13,24 +13,37 @@ html, body {
 
 /* --- Header Utama --- */
 header {
-    background-color: #004d99; /* Navy Blue Gelap */
+    background-color: #004d99; 
     color: white;
     padding: 40px 20px;
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 h1 {
-    font-size: 2.8rem;
+    font-size: 2.5rem; /* Ukuran font dikurangi */
     font-weight: 700;
     margin: 0;
-    letter-spacing: 1.5px;
+    letter-spacing: 1px; /* Letter spacing dikurangi */
     text-transform: uppercase;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Media Query untuk mengecilkan ukuran H1 di Mobile (Perangkat Sangat Sempit) */
+@media (max-width: 450px) { 
+    h1 {
+        font-size: 1.8rem; 
+    }
+    header {
+        padding: 30px 10px;
+    }
 }
 
 /* --- Kontainer Utama --- */
 .container {
     padding: 20px;
-    max-width: 1100px;
+    max-width: 1000px; 
     margin: 20px auto;
     flex-grow: 1;
     width: 100%;
@@ -42,14 +55,15 @@ details {
     background: #ffffff;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    margin-bottom: 25px;
     border: 1px solid #e0e0e0;
+    max-width: 900px; 
+    margin: 25px auto; 
 }
 
 summary {
     font-family: 'Inter', sans-serif;
     color: #1f2937;
-    background-color: #f0f4f8; /* Light blue-gray background */
+    background-color: #f0f4f8; 
     padding: 20px 25px;
     border-radius: 12px 12px 0 0;
     font-size: 1.4rem;
@@ -61,7 +75,6 @@ summary {
     align-items: center;
     transition: background-color 0.3s;
     border-bottom: 1px solid #e0e0e0;
-    /* Mencegah highlight teks saat diklik */
     -webkit-user-select: none; 
     -moz-user-select: none;
     -ms-user-select: none;
@@ -70,26 +83,23 @@ summary {
 summary:hover {
     background-color: #e5e7eb;
 }
-
-/* PERBAIKAN: Menghilangkan fokus outline dan blok warna saat klik/sentuh */
 summary:focus, summary:active {
     outline: none; 
     box-shadow: none; 
     -webkit-tap-highlight-color: transparent; 
 }
-
-
 summary::after {
-    content: '\25BC'; /* Ikon panah bawah */
+    content: '\25BC'; 
     font-size: 1.1rem;
     color: #007bff;
     transition: transform 0.3s;
 }
 details[open] summary {
     border-bottom: none;
+    border-radius: 12px 12px 0 0;
 }
 details[open] summary::after {
-    content: '\25B2'; /* Ikon panah atas */
+    content: '\25B2'; 
     transform: rotate(0deg);
 }
 
@@ -99,6 +109,8 @@ details[open] summary::after {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 25px;
+    /* PERBAIKAN FINAL: Memusatkan seluruh konten grid secara horizontal dan vertikal */
+    place-content: center; 
 }
 
 /* --- Styling Price Card / Policy Card --- */
@@ -109,6 +121,11 @@ details[open] summary::after {
     border: 1px solid #e5e7eb;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     transition: box-shadow 0.3s, transform 0.3s;
+    max-width: 450px; 
+    justify-self: center; /* Memastikan card di tengah kolomnya */
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center; /* Memusatkan teks di dalam card */
 }
 .price-card:hover, .policy-card:hover {
     transform: translateY(-3px);
@@ -118,13 +135,14 @@ details[open] summary::after {
 /* Styling Judul Card */
 .price-card h3, .policy-card h3 {
     font-family: 'Inter', sans-serif;
-    color: #007bff; /* Warna Blue Accent */
+    color: #007bff; 
     font-size: 1.15rem;
     font-weight: 600;
     margin-top: 0;
     padding-bottom: 5px;
     border-bottom: 2px solid #e0f2ff;
     margin-bottom: 15px;
+    text-align: center; 
 }
 .price-card p, .policy-card p {
     font-size: 0.95rem;
@@ -141,6 +159,10 @@ details[open] summary::after {
     list-style: none;
     padding: 0;
     margin: 0;
+    /* Memusatkan blok daftar harga di dalam card */
+    width: 90%; 
+    max-width: 300px;
+    margin: 0 auto;
 }
 .price-list li {
     display: flex;
@@ -158,7 +180,7 @@ details[open] summary::after {
     font-weight: 500;
 }
 .price-list .price-range {
-    color: #dc3545; /* Warna Merah tegas untuk harga */
+    color: #dc3545; 
     font-weight: 700;
     font-size: 1.05rem;
 }
@@ -178,7 +200,7 @@ details[open] summary::after {
 }
 #registrationForm h2 {
     font-family: 'Inter', sans-serif;
-    color: #004d99; /* Navy Blue Gelap */
+    color: #004d99; 
     font-size: 1.8rem;
     font-weight: 700;
     margin-top: 0;
@@ -233,7 +255,7 @@ input[type="file"]::file-selector-button:hover {
 
 #submit-btn {
     padding: 15px;
-    background-color: #28a745; /* Green for action */
+    background-color: #28a745; 
     color: white;
     border: none;
     border-radius: 6px;
@@ -272,7 +294,7 @@ hr {
 footer {
     text-align: center;
     padding: 20px;
-    background-color: #f0f0f0; /* Latar belakang abu-abu muda */
+    background-color: #f0f0f0; 
     border-top: 1px solid #e0e0e0;
     margin-top: 40px;
 }
@@ -295,5 +317,10 @@ footer {
     /* Memastikan kebijakan dan S&K tetap 2 kolom per baris di dalam konten */
     .policy-content {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Memastikan card tetap di tengah di desktop */
+    .price-card, .policy-card {
+        justify-self: center; 
     }
 }
