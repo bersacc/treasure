@@ -54,7 +54,7 @@
 
     <script>
         // URL Web App Skrip Mandiri Terbaru Anda
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKVj_9pBi3uiTKUaYU2Smcl-hJA1R2ljDuLh8TpTfJwYl_vo2cRf-SQzA1T_WGfLw/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuZQ_jLy71SlCV-FI6L_4pTXI1VbRlTHskZxCwoc64t3pAA0Nd9L5iwBDgBhToH-S-/exec";
 
         document.getElementById('registrationForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
@@ -75,14 +75,23 @@
                 submitButton.textContent = 'Kirim Pendaftaran';
                 return;
             }
+            
+            // Batasan ukuran file (misalnya, 8MB) untuk mencegah timeout Apps Script
+            const MAX_SIZE_MB = 8; 
+            if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+                 messageContainer.innerHTML = `<div class="message error">Ukuran file melebihi ${MAX_SIZE_MB}MB. Harap gunakan file yang lebih kecil.</div>`;
+                submitButton.disabled = false;
+                submitButton.textContent = 'Kirim Pendaftaran';
+                return;
+            }
 
             // Gunakan FileReader untuk mengubah file menjadi Base64
             const reader = new FileReader();
             reader.readAsDataURL(file); 
 
             reader.onload = function() {
-                // Hapus header Base64 (misalnya 'data:image/png;base64,')
-                const base64Data = reader.result.split(',')[1];
+                // Base64 sudah memiliki header 'data:image/jpeg;base64,' yang akan diproses di Apps Script
+                const base64DataWithHeader = reader.result;
                 
                 // Siapkan data untuk dikirim ke Apps Script
                 const formData = {
@@ -90,7 +99,7 @@
                     platform: form.platform.value,
                     accountBA: form.accountBA.value,
                     noWA: form.noWA.value,
-                    screenshotBase64: base64Data,
+                    screenshotBase64: base64DataWithHeader, // Kirim data Base64 utuh
                     screenshotName: file.name,
                     screenshotType: file.type 
                 };
@@ -106,22 +115,23 @@
                     body: JSON.stringify(formData)
                 })
                 .then(response => {
-                    // Cek jika response OK (200), jika tidak, ini adalah error jaringan/CORS
                     if (!response.ok) {
-                        throw new Error('Network response was not ok: ' + response.statusText);
+                        // Jika respons tidak OK (misalnya 500, 404), throw error
+                        throw new Error('Network response was not ok, status: ' + response.status);
                     }
                     return response.json();
                 })
                 .then(result => {
-                    if (result.success) {
-                        messageContainer.innerHTML = '<div class="message success">Pendaftaran Berhasil! Data Anda sudah tersimpan.</div>';
-                        form.reset(); // Kosongkan formulir setelah sukses
+                    if (result.status === 'success') {
+                        messageContainer.innerHTML = '<div class="message success">✅ Pendaftaran Berhasil! Data Anda sudah tersimpan.</div>';
+                        form.reset(); 
                     } else {
-                        messageContainer.innerHTML = `<div class="message error">Pendaftaran Gagal (Server Error): ${result.message}</div>`;
+                        messageContainer.innerHTML = `<div class="message error">❌ Pendaftaran Gagal (Server Error): ${result.message}</div>`;
                     }
                 })
                 .catch(error => {
-                    messageContainer.innerHTML = `<div class="message error">Terjadi kesalahan: ${error}</div>`;
+                    // Ini akan menangani error CORS atau kegagalan jaringan
+                    messageContainer.innerHTML = `<div class="message error">🚨 Terjadi kesalahan jaringan atau server: ${error}</div>`;
                 })
                 .finally(() => {
                     submitButton.disabled = false;
