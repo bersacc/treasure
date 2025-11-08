@@ -54,7 +54,7 @@
 
     <script>
         // URL Web App terbaru Anda
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQTRaSuC20FAtP5c1jwrVytkxCIUSLqF5uAN62UFmoSeCASIbqUUHnDwtBGy2Zkwc-/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxc__NlCjzC8_e1jklMaxSOP9xlYNuFwCrshitM-qP-y9Ig3xdciEHutyXjnaeBukSs/exec";
 
         document.getElementById('registrationForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
@@ -66,68 +66,37 @@
             submitButton.textContent = 'Memproses... Harap Tunggu';
             messageContainer.innerHTML = ''; 
 
-            const fileInput = document.getElementById('screenshot');
-            const file = fileInput.files[0];
+            // Gunakan FormData untuk menangkap semua input, termasuk file
+            const formData = new FormData(form);
 
-            if (!file) {
-                alert('Mohon unggah file screenshot.');
+            // Kirim data menggunakan Fetch API
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                // PENTING: Jangan set Content-Type header secara manual. Browser akan 
+                // mengurusnya (untuk multipart)
+                body: formData
+            })
+            .then(response => {
+                // Apps Script harus mengembalikan respons JSON
+                return response.json(); 
+            })
+            .then(result => {
+                if (result.success) {
+                    messageContainer.innerHTML = '<div class="message success">Pendaftaran Berhasil! Data Anda sudah tersimpan.</div>';
+                    form.reset(); // Kosongkan formulir setelah sukses
+                } else {
+                    messageContainer.innerHTML = `<div class="message error">Pendaftaran Gagal (Apps Script Error): ${result.message}</div>`;
+                }
+            })
+            .catch(error => {
+                messageContainer.innerHTML = `<div class="message error">Terjadi kesalahan jaringan atau server: ${error}</div>`;
+            })
+            .finally(() => {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Kirim Pendaftaran';
-                return;
-            }
-
-            // Gunakan FileReader untuk mengubah file menjadi Base64
-            const reader = new FileReader();
-            reader.readAsDataURL(file); 
-
-            reader.onload = function() {
-                // Hapus header Base64 (misalnya 'data:image/png;base64,')
-                const base64Data = reader.result.split(',')[1];
-                
-                // Siapkan data untuk dikirim ke Apps Script
-                const formData = {
-                    nama: form.nama.value,
-                    platform: form.platform.value,
-                    accountBA: form.accountBA.value,
-                    noWA: form.noWA.value,
-                    screenshotBase64: base64Data,
-                    screenshotName: file.name,
-                    screenshotType: file.type 
-                };
-
-                // Kirim data menggunakan Fetch API
-                fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    cache: 'no-cache',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        messageContainer.innerHTML = '<div class="message success">Pendaftaran Berhasil! Data Anda sudah tersimpan.</div>';
-                        form.reset(); // Kosongkan formulir setelah sukses
-                    } else {
-                        messageContainer.innerHTML = `<div class="message error">Pendaftaran Gagal: ${result.message}</div>`;
-                    }
-                })
-                .catch(error => {
-                    messageContainer.innerHTML = `<div class="message error">Terjadi kesalahan jaringan atau server: ${error}</div>`;
-                })
-                .finally(() => {
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Kirim Pendaftaran';
-                });
-            };
-
-            reader.onerror = function(error) {
-                messageContainer.innerHTML = `<div class="message error">Gagal membaca file: ${error}</div>`;
-                submitButton.disabled = false;
-                submitButton.textContent = 'Kirim Pendaftaran';
-            };
+            });
         });
     </script>
 </body>
