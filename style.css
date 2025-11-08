@@ -1,54 +1,103 @@
-/* Gaya Dasar Halaman */
-body {
-    background-color: #1e1e1e; /* Warna latar belakang gelap */
-    color: #f0f0f0; /* Warna teks terang */
-    font-family: Arial, sans-serif;
+/* ========================================================== */
+/* === GLOBAL & LAYOUT STYLES (DARK MODE) === */
+/* ========================================================== */
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background-color: #1e1e1e; /* Latar belakang gelap */
+    color: #f0f0f0; /* Teks terang */
+    margin: 0;
+    padding: 0;
 }
 
-/* Gaya Bagian Pricelist */
-#pricelist {
-    padding: 40px 20px;
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+h1 { 
+    text-align: center;
+    color: #FFC107; /* Aksen Kuning */
+    padding: 20px 0;
+    margin: 0;
+    border-bottom: 2px solid #444; 
+}
+
+/* ========================================================== */
+/* === DROPDOWN/TOGGLE STYLES (PRICELIST & POLICY) === */
+/* ========================================================== */
+details {
+    max-width: 90%;
+    margin: 20px auto; 
+    background-color: #2c2c2c;
+    border: 1px solid #444;
+    border-radius: 12px;
+    padding: 0 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+summary {
+    font-size: 1.5em;
+    font-weight: bold;
+    padding: 15px 0;
+    cursor: pointer;
+    color: #4CAF50; /* Warna Judul Dropdown */
+    list-style: none; 
     text-align: center;
 }
 
-#pricelist h2 {
-    color: #4CAF50; /* Warna aksen untuk judul utama */
-    margin-bottom: 40px;
-    font-size: 2em;
+summary::-webkit-details-marker {
+    display: none; 
 }
 
-/* Container untuk Kartu Harga (Responsive Grid) */
-#pricelist {
+/* Simbol panah untuk Toggle */
+summary::after {
+    content: ' ▼'; 
+    float: right;
+    transition: transform 0.3s;
+    color: #FFC107;
+}
+
+details[open] summary::after {
+    content: ' ▲'; 
+    transform: rotate(180deg);
+}
+
+/* ========================================================== */
+/* === PRICELIST CARDS STYLES === */
+/* ========================================================== */
+
+#pricelist-content {
+    padding-bottom: 20px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px; /* Jarak antar kartu */
+    gap: 15px; 
+    text-align: center;
 }
 
-/* Gaya Kartu Harga */
 .price-card {
-    background-color: #2c2c2c; /* Warna latar belakang kartu sedikit lebih terang */
-    border: 1px solid #444;
+    background-color: #333; 
+    border: 1px solid #555;
     border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    padding: 15px; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     text-align: left;
     transition: transform 0.3s;
 }
 
 .price-card:hover {
-    transform: translateY(-5px); /* Efek hover minor */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    transform: translateY(-5px); 
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
 }
 
 .price-card h3 {
-    color: #FFC107; /* Warna aksen untuk sub-judul */
-    border-bottom: 2px solid #444;
-    padding-bottom: 10px;
+    color: #00bcd4; 
+    border-bottom: 2px solid #555;
+    padding-bottom: 8px; 
     margin-top: 0;
-    margin-bottom: 20px;
+    margin-bottom: 10px; 
 }
 
-/* Gaya List Harga */
 .price-list {
     list-style: none;
     padding: 0;
@@ -58,8 +107,8 @@ body {
 .price-list li {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px dashed #444;
+    padding: 6px 0; 
+    border-bottom: 1px dashed #555;
     font-size: 1.1em;
 }
 
@@ -69,17 +118,105 @@ body {
 
 .price-range {
     font-weight: bold;
-    color: #00bcd4; /* Warna aksen untuk harga (cyan/biru terang) */
+    color: #FFC107; 
 }
 
-/* Gaya Kartu Catatan Khusus */
 .special-note {
-    background-color: #4CAF50; /* Warna latar belakang aksen hijau */
+    background-color: #4CAF50; 
     color: #1e1e1e;
     font-weight: bold;
+    grid-column: 1 / -1; 
 }
 
 .special-note h3 {
     color: #1e1e1e;
     border-bottom-color: #1e1e1e;
 }
+
+
+/* ========================================================== */
+/* === POLICY STYLES (NEW) === */
+/* ========================================================== */
+.policy-content {
+    padding: 10px 0 20px 0;
+    display: grid; 
+    grid-template-columns: 1fr;
+    gap: 10px; 
+}
+
+.policy-card {
+    background-color: #333;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    text-align: left;
+}
+
+.policy-card h3 {
+    color: #FFC107; 
+    font-size: 1.1em;
+    margin: 0 0 5px 0;
+    font-weight: bold;
+}
+
+.policy-card p {
+    margin: 0;
+    line-height: 1.4;
+    font-size: 1em;
+}
+
+
+/* ========================================================== */
+/* === FORM STYLES === */
+/* ========================================================== */
+
+#registrationForm {
+    max-width: 600px;
+    background: #2c2c2c; 
+    padding: 30px; 
+    border-radius: 8px; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    margin: 40px auto; 
+    border: 1px solid #444;
+}
+
+#registrationForm h2 {
+    color: #f0f0f0;
+    border-bottom: 1px solid #444;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+label { display: block; margin-top: 10px; font-weight: bold; color: #f0f0f0; } 
+
+input[type="text"], input[type="tel"], select, input[type="file"] {
+    width: 100%; padding: 10px; 
+    margin-top: 5px; 
+    border: 1px solid #555; 
+    box-sizing: border-box; 
+    border-radius: 4px;
+    background-color: #333; 
+    color: #f0f0f0;
+}
+
+#submit-btn {
+    background-color: #00bcd4; 
+    color: #1e1e1e; 
+    padding: 15px 20px; 
+    margin-top: 20px; 
+    border: none; 
+    cursor: pointer; 
+    width: 100%; 
+    border-radius: 4px; 
+    font-size: 16px; 
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+#submit-btn:hover:not([disabled]) { background-color: #0097a7; }
+#submit-btn[disabled] { background-color: #555; cursor: not-allowed; color: #aaa;}
+
+.message { margin-top: 15px; padding: 15px; border-radius: 4px; text-align: center; font-weight: bold; }
+.success { background-color: #38761d; color: #fff; border: 1px solid #274e13; }
+.error { background-color: #cc0000; color: #fff; border: 1px solid #660000; }
