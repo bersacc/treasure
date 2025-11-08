@@ -46,22 +46,16 @@ summary {
     text-align: center;
 }
 
+/* --- BLOCK CODE YANG DIHAPUS (Panah) --- */
+
 summary::-webkit-details-marker {
     display: none; 
 }
 
-/* Simbol panah untuk Toggle */
-summary::after {
-    content: ' ▼'; 
-    float: right;
-    transition: transform 0.3s;
-    color: #FFC107;
-}
-
-details[open] summary::after {
-    content: ' ▲'; 
-    transform: rotate(180deg);
-}
+/* Blok kode berikut dihilangkan:
+    summary::after { ... }
+    details[open] summary::after { ... }
+*/
 
 /* ========================================================== */
 /* === PRICELIST CARDS STYLES === */
