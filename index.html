@@ -31,47 +31,78 @@
         }
 
         /* ========================================================== */
-        /* === PRICELIST STYLES (DIRAPATKAN) === */
+        /* === DROPDOWN/TOGGLE STYLES (NEW) === */
         /* ========================================================== */
-        #pricelist {
-            padding: 20px 20px; 
-            text-align: center;
-            /* Grid untuk tata letak kartu */
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px; /* Jarak antar kartu dirapatkan */
+        details {
             max-width: 90%;
             margin: 20px auto; 
-        }
-
-        /* PERBAIKAN JUDUL PRICELIST (Judul tanpa Emoticon, Jarak Dirapatkan) */
-        #pricelist h2 {
-            grid-column: 1 / -1; 
-            color: #4CAF50; 
-            margin-bottom: 10px; 
-            font-size: 2em;
-            line-height: 1.2; 
-            white-space: normal;
-        }
-
-        .price-card {
-            background-color: #2c2c2c; 
+            background-color: #2c2c2c;
             border: 1px solid #444;
             border-radius: 12px;
-            padding: 15px; 
+            padding: 0 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        summary {
+            font-size: 1.5em;
+            font-weight: bold;
+            padding: 15px 0;
+            cursor: pointer;
+            color: #4CAF50; /* Warna Judul Pricelist */
+            list-style: none; /* Hilangkan default arrow */
+            text-align: center;
+        }
+
+        summary::-webkit-details-marker {
+            display: none; /* Hilangkan marker di Chrome/Safari */
+        }
+        
+        /* Tambahkan simbol panah/toggle menggunakan pseudo-element */
+        summary::after {
+            content: ' ▼'; /* Simbol panah ke bawah */
+            float: right;
+            transition: transform 0.3s;
+            color: #FFC107;
+        }
+
+        details[open] summary::after {
+            content: ' ▲'; /* Simbol panah ke atas saat terbuka */
+            transform: rotate(180deg);
+        }
+
+        /* ========================================================== */
+        /* === PRICELIST STYLES (DIRAPATKAN) === */
+        /* ========================================================== */
+        
+        /* Container Grid Pricelist di dalam details */
+        #pricelist-content {
+            padding-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px; 
+            text-align: center;
+        }
+
+        /* Hapus style h2 karena sekarang menggunakan summary */
+        
+        .price-card {
+            background-color: #333; /* Warna kartu sedikit lebih gelap dari container details */
+            border: 1px solid #555;
+            border-radius: 12px;
+            padding: 15px; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             text-align: left;
             transition: transform 0.3s;
         }
 
         .price-card:hover {
             transform: translateY(-5px); 
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
         }
 
         .price-card h3 {
             color: #00bcd4; 
-            border-bottom: 2px solid #444;
+            border-bottom: 2px solid #555;
             padding-bottom: 8px; 
             margin-top: 0;
             margin-bottom: 10px; 
@@ -87,7 +118,7 @@
             display: flex;
             justify-content: space-between;
             padding: 6px 0; 
-            border-bottom: 1px dashed #444;
+            border-bottom: 1px dashed #555;
             font-size: 1.1em;
         }
 
@@ -104,6 +135,7 @@
             background-color: #4CAF50; 
             color: #1e1e1e;
             font-weight: bold;
+            grid-column: 1 / -1; /* Membuat catatan khusus membentang */
         }
 
         .special-note h3 {
@@ -122,7 +154,7 @@
             padding: 30px; 
             border-radius: 8px; 
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
-            margin: 20px auto; 
+            margin: 40px auto; /* Memberi jarak lebih ke form setelah Pricelist Dropdown */
             border: 1px solid #444;
         }
 
@@ -176,66 +208,68 @@
 
     <div class="container">
         
-        <section id="pricelist">
-            <h2>-- PRICELIST TREASURE RESS --</h2>
-
-            <div class="price-card">
-                <h3>Kosongan Biasa</h3>
-                <ul class="price-list">
-                    <li><span>Y25</span> <span class="price-range">4K - 5.5K</span></li>
-                    <li><span>YLama</span> <span class="price-range">5K - 7.5K</span></li>
-                    <li><span>Masuk HT</span> <span class="price-range">17K - 20K</span></li>
-                </ul>
-            </div>
+        <details open>
+            <summary>-- PRICELIST TREASURE RESS --</summary>
             
-            <div class="price-card">
-                <h3>Account CA/RP/BA</h3>
-                <ul class="price-list">
-                    <li><span>Verif All</span> <span class="price-range">12K - 13K</span></li>
-                    <li><span>Verif Email</span> <span class="price-range">10K - 11K</span></li>
-                </ul>
-            </div>
-            
-            <div class="price-card">
-                <h3>Acc Ber-followers (General)</h3>
-                <ul class="price-list">
-                    <li><span>F100</span> <span class="price-range">20K - 25K</span></li>
-                    <li><span>F200</span> <span class="price-range">25K - 30K</span></li>
-                    <li><span>F300</span> <span class="price-range">35K - 40K</span></li>
-                </ul>
-            </div>
+            <section id="pricelist-content">
+                <div class="price-card">
+                    <h3>Kosongan Biasa</h3>
+                    <ul class="price-list">
+                        <li><span>Y25</span> <span class="price-range">4K - 5.5K</span></li>
+                        <li><span>YLama</span> <span class="price-range">5K - 7.5K</span></li>
+                        <li><span>Masuk HT</span> <span class="price-range">17K - 20K</span></li>
+                    </ul>
+                </div>
+                
+                <div class="price-card">
+                    <h3>Account CA/RP/BA</h3>
+                    <ul class="price-list">
+                        <li><span>Verif All</span> <span class="price-range">12K - 13K</span></li>
+                        <li><span>Verif Email</span> <span class="price-range">10K - 11K</span></li>
+                    </ul>
+                </div>
+                
+                <div class="price-card">
+                    <h3>Acc Ber-followers (General)</h3>
+                    <ul class="price-list">
+                        <li><span>F100</span> <span class="price-range">20K - 25K</span></li>
+                        <li><span>F200</span> <span class="price-range">25K - 30K</span></li>
+                        <li><span>F300</span> <span class="price-range">35K - 40K</span></li>
+                    </ul>
+                </div>
 
-            <div class="price-card special-note">
-                <h3>Account Inact</h3>
-                <p>Harga menyesuaikan spesifikasi akun</p>
-            </div>
+                <div class="price-card special-note">
+                    <h3>Account Inact</h3>
+                    <p>Harga menyesuaikan spesifikasi akun</p>
+                </div>
 
-            <div class="price-card">
-                <h3>Account Instagram</h3>
-                <ul class="price-list">
-                    <li><span>Kosongan</span> <span class="price-range">3K</span></li>
-                    <li><span>F100</span> <span class="price-range">10K</span></li>
-                    <li><span>F200</span> <span class="price-range">13K</span></li>
-                    <li><span>F300</span> <span class="price-range">15K</span></li>
-                    <li><span>F400</span> <span class="price-range">17K</span></li>
-                    <li><span>F500</span> <span class="price-range">20K</span></li>
-                </ul>
-            </div>
+                <div class="price-card">
+                    <h3>Account Instagram</h3>
+                    <ul class="price-list">
+                        <li><span>Kosongan</span> <span class="price-range">3K</span></li>
+                        <li><span>F100</span> <span class="price-range">10K</span></li>
+                        <li><span>F200</span> <span class="price-range">13K</span></li>
+                        <li><span>F300</span> <span class="price-range">15K</span></li>
+                        <li><span>F400</span> <span class="price-range">17K</span></li>
+                        <li><span>F500</span> <span class="price-range">20K</span></li>
+                    </ul>
+                </div>
 
-            <div class="price-card">
-                <h3>Account TikTok</h3>
-                <ul class="price-list">
-                    <li><span>Kosongan</span> <span class="price-range">5K</span></li>
-                    <li><span>F100</span> <span class="price-range">10K</span></li>
-                    <li><span>F200</span> <span class="price-range">15K</span></li>
-                    <li><span>F300</span> <span class="price-range">20K</span></li>
-                    <li><span>F1K</span> <span class="price-range">80K</span></li>
-                    <li><span>F2K</span> <span class="price-range">100K</span></li>
-                    <li><span>F10K</span> <span class="price-range">250K</span></li>
-                    
-                </ul>
-            </div>
-        </section>
+                <div class="price-card">
+                    <h3>Account TikTok</h3>
+                    <ul class="price-list">
+                        <li><span>Kosongan</span> <span class="price-range">5K</span></li>
+                        <li><span>F100</span> <span class="price-range">10K</span></li>
+                        <li><span>F200</span> <span class="price-range">15K</span></li>
+                        <li><span>F300</span> <span class="price-range">20K</span></li>
+                        <li><span>F1K</span> <span class="price-range">80K</span></li>
+                        <li><span>F2K</span> <span class="price-range">100K</span></li>
+                        <li><span>F10K</span> <span class="price-range">250K</span></li>
+                        
+                    </ul>
+                </div>
+            </section>
+        </details>
 
         <hr style="border-top: 1px solid #444; margin: 40px 0;">
 
