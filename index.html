@@ -34,14 +34,14 @@
         <label for="platform">Platform Promosi:</label>
         <select id="platform" name="platform" required>
             <option value="">-- Pilih Platform --</option>
+            <option value="Twitter">Twitter</option>
             <option value="Instagram">Instagram</option>
             <option value="TikTok">TikTok</option>
-            <option value="YouTube">YouTube</option>
             <option value="Lainnya">Lainnya</option>
         </select>
 
-        <label for="accountBA">Username Akun BA:</label>
-        <input type="text" id="accountBA" name="accountBA" required>
+        <label for="accountBA">Username Akun BA (tanpa @):</label>
+        <input type="text" id="accountBA" name="usernameBA" required> 
 
         <label for="noWA">Nomor WhatsApp Aktif:</label>
         <input type="tel" id="noWA" name="noWA" placeholder="Contoh: 08123456789" required>
@@ -54,9 +54,8 @@
     </form>
 
     <script>
-        // Gunakan JavaScript untuk menangani respons dari Worker/Apps Script
         document.getElementById('registrationForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // Mencegah submit form standar
+            e.preventDefault(); 
 
             const form = e.target;
             const submitButton = document.getElementById('submit-btn');
@@ -67,13 +66,47 @@
             submitButton.textContent = 'Memproses... Harap Tunggu';
             messageContainer.innerHTML = ''; 
             
-            // Mengambil FormData dari formulir
+            // 1. Mengambil FormData dari formulir
             const formData = new FormData(form);
 
-            // Kirim data ke Worker menggunakan Fetch
+            // 2. Mendapatkan nilai untuk membuat link
+            const platform = formData.get('platform');
+            const username = formData.get('usernameBA');
+
+            // 3. Logika Pembuatan Link Akun Otomatis
+            let socialLink = '';
+            
+            if (username && platform) {
+                const cleanUsername = username.replace('@', ''); // Hapus '@' jika ada
+                
+                switch (platform) {
+                    case 'Twitter':
+                        socialLink = 'https://twitter.com/' + cleanUsername;
+                        break;
+                    case 'Instagram':
+                        socialLink = 'https://instagram.com/' + cleanUsername;
+                        break;
+                    case 'TikTok':
+                        socialLink = 'https://tiktok.com/@' + cleanUsername;
+                        break;
+                    case 'Lainnya':
+                        socialLink = 'Platform Lain: ' + username;
+                        break;
+                }
+            } else if (platform === 'Lainnya') {
+                socialLink = 'Platform Lain: ' + username;
+            } else {
+                socialLink = 'Username tidak diisi/Link Gagal';
+            }
+            
+            // 4. Tambahkan link baru ke FormData yang akan dikirim ke Worker/Apps Script
+            // Apps Script akan mengambil field ini: e.parameter.linkAkun
+            formData.set('linkAkun', socialLink); 
+            
+            // 5. Kirim data ke Worker menggunakan Fetch
             fetch(workerUrl, {
                 method: 'POST',
-                body: formData // Langsung kirim FormData multipart/form-data
+                body: formData // Kirim FormData multipart/form-data
             })
             .then(response => {
                 if (!response.ok) {
