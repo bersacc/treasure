@@ -1,146 +1,51 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Formulir Pendaftaran</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #eee;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    h1 {
-      color: #00ffb3;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    form {
-      background: #1b1b1b;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #00ffb366;
-      max-width: 400px;
-      width: 100%;
-    }
-
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: none;
-      border-radius: 6px;
-      background: #2a2a2a;
-      color: #fff;
-      font-size: 1em;
-    }
-
-    button {
-      margin-top: 15px;
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      background: #00ffb3;
-      color: #000;
-      font-size: 1em;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #00c78a;
-    }
-
-    #statusText {
-      margin-top: 15px;
-      font-weight: bold;
-      text-align: center;
-    }
-  </style>
+    <title>Formulir Pendaftaran Akun BA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 20px; background-color: #f4f4f4; }
+        h1 { color: #333; border-bottom: 2px solid #ccc; padding-bottom: 10px; }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input[type="text"], input[type="tel"], select, input[type="file"] {
+            width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; box-sizing: border-box; border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #007BFF; color: white; padding: 15px 20px; margin-top: 20px; border: none; cursor: pointer; width: 100%; border-radius: 4px; font-size: 16px;
+        }
+        input[type="submit"]:hover { background-color: #0056b3; }
+        form { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    </style>
 </head>
 <body>
-  <h1>Formulir Pendaftaran</h1>
 
-  <form id="formPendaftaran">
-    <label for="nama">Nama</label>
-    <input type="text" id="nama" name="nama" required />
+    <h1>Formulir Pendaftaran Akun BA</h1>
+    
+    <form method="post" action="https://script.google.com/macros/s/AKfycbzq54SOFMc90p5SKNUAuT3JwLqqZkniETSfIyYfpsSKtmAU9BM4wqOqMeMP09MX7GHs/exec" enctype="multipart/form-data">
+        
+        <label for="nama">Nama Lengkap:</label>
+        <input type="text" id="nama" name="nama" required>
 
-    <label for="platform">Platform Promosi</label>
-    <input type="text" id="platform" name="platform" required />
+        <label for="platform">Platform Promosi:</label>
+        <select id="platform" name="platform" required>
+            <option value="">-- Pilih Platform --</option>
+            <option value="Instagram">Instagram</option>
+            <option value="TikTok">TikTok</option>
+            <option value="YouTube">YouTube</option>
+            <option value="Lainnya">Lainnya</option>
+        </select>
 
-    <label for="account">Account BA</label>
-    <input type="text" id="account" name="account" required />
+        <label for="accountBA">Username Akun BA:</label>
+        <input type="text" id="accountBA" name="accountBA" required>
 
-    <label for="whatsapp">Nomor WhatsApp</label>
-    <input type="text" id="whatsapp" name="whatsapp" required />
+        <label for="noWA">Nomor WhatsApp Aktif:</label>
+        <input type="tel" id="noWA" name="noWA" placeholder="Contoh: 08123456789" required>
 
-    <button type="submit">Kirim</button>
-  </form>
+        <label for="screenshot">Screenshot Bukti Kepemilikan Account BA:</label>
+        <input type="file" id="screenshot" name="screenshot" accept="image/png, image/jpeg" required>
 
-  <p id="statusText"></p>
+        <input type="submit" value="Kirim Pendaftaran">
+    </form>
 
-  <script>
-    const form = document.querySelector("#formPendaftaran");
-    const statusText = document.getElementById("statusText");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const data = {
-        nama: form.nama.value,
-        platform: form.platform.value,
-        account: form.account.value,
-        whatsapp: form.whatsapp.value
-      };
-
-      const button = form.querySelector("button[type='submit']");
-      button.disabled = true;
-      button.textContent = "Mengirim data...";
-      statusText.textContent = "";
-
-      try {
-        const res = await fetch("/api", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-
-        const text = await res.text();
-        let result;
-        try {
-          result = JSON.parse(text);
-        } catch {
-          throw new Error("Respon bukan JSON valid:\n" + text);
-        }
-
-        statusText.textContent = "✅ " + result.message;
-        statusText.style.color = "lime";
-        form.reset();
-
-      } catch (err) {
-        statusText.textContent = "❌ " + err.message;
-        statusText.style.color = "red";
-      } finally {
-        button.disabled = false;
-        button.textContent = "Kirim";
-      }
-    });
-  </script>
 </body>
 </html>
